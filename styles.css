@@ -281,10 +281,48 @@ button:hover {
   filter: brightness(0.96);
 }
 
-#loadSample,
 #downloadCsv {
   background: #e8efe8;
   color: var(--ink);
+}
+
+.grade-list {
+  display: grid;
+  gap: 8px;
+}
+
+.grade-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 12px;
+  width: 100%;
+  min-height: 58px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  text-align: left;
+  padding: 10px 12px;
+}
+
+.grade-row.active {
+  border-color: var(--green);
+  background: #f1f8f3;
+}
+
+.grade-row span {
+  min-width: 0;
+  font-weight: 800;
+}
+
+.grade-row strong {
+  white-space: nowrap;
+}
+
+.grade-row em {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  font-size: 12px;
+  font-style: normal;
 }
 
 .insights ul {
