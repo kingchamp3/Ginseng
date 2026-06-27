@@ -18,6 +18,8 @@ const els = {
   gradeSelect: document.querySelector("#gradeSelect"),
   horizon: document.querySelector("#horizon"),
   sensitivity: document.querySelector("#sensitivity"),
+  seasonality: document.querySelector("#seasonality"),
+  purchasePressure: document.querySelector("#purchasePressure"),
   sourceText: document.querySelector("#sourceText"),
   refreshMarket: document.querySelector("#refreshMarket"),
   refreshMessage: document.querySelector("#refreshMessage"),
@@ -110,9 +112,11 @@ function syncGradeOptions() {
   els.gradeSelect.value = market.grades.some((grade) => grade.name === selected) ? selected : market.grades[0].name;
 }
 
-function buildForecast(grade, horizon, sensitivity) {
+function buildForecast(grade, horizon, sensitivity, seasonality, purchasePressure) {
   const step = 7;
   const strength = sensitivity / 100;
+  const seasonalStrength = seasonality / 100;
+  const purchaseStrength = purchasePressure / 100;
   const spreadBase = dispersion(market.grades.map((item) => item.price));
   const changeDrift = grade.price * (grade.changePct / 100) * strength;
   const current = { date: market.date, price: grade.price };
@@ -121,14 +125,18 @@ function buildForecast(grade, horizon, sensitivity) {
   for (let day = step; day <= horizon; day += step) {
     const date = new Date(market.date.getTime() + day * dayMs);
     const trendDecay = Math.exp(-day / 75);
-    const seasonal = Math.sin(((date.getMonth() + 1) / 12) * Math.PI * 2) * grade.price * 0.012;
-    const estimate = Math.max(1000, grade.price + changeDrift * trendDecay + seasonal * strength);
-    const spread = Math.max(450, spreadBase * 0.18) * (1 + day / 180);
+    const seasonal = grade.price * seasonalFactor(date) * seasonalStrength;
+    const purchase = grade.price * purchaseFactor(date) * purchaseStrength;
+    const estimate = Math.max(1000, grade.price + changeDrift * trendDecay + seasonal + purchase);
+    const purchaseRisk = Math.abs(purchaseFactor(date)) * purchaseStrength;
+    const spread = Math.max(450, spreadBase * 0.18) * (1 + day / 180 + purchaseRisk * 0.35);
     points.push({
       date,
       price: Math.round(estimate),
       low: Math.round(Math.max(1000, estimate - spread)),
       high: Math.round(estimate + spread),
+      seasonalPct: seasonalFactor(date) * seasonalStrength * 100,
+      purchasePct: purchaseFactor(date) * purchaseStrength * 100,
     });
   }
 
@@ -139,7 +147,9 @@ function render() {
   const grade = currentGrade();
   const horizon = Number(els.horizon.value);
   const sensitivity = Number(els.sensitivity.value);
-  const model = buildForecast(grade, horizon, sensitivity);
+  const seasonality = Number(els.seasonality.value);
+  const purchasePressure = Number(els.purchasePressure.value);
+  const model = buildForecast(grade, horizon, sensitivity, seasonality, purchasePressure);
   forecastData = model.points;
 
   els.modelStatus.textContent = `인삼통 ${formatDate(market.date)} 기준`;
@@ -148,7 +158,7 @@ function render() {
   els.forecast30.textContent = money(nearestForecast(30)?.price ?? forecastData.at(-1).price);
   els.forecast90.textContent = money(nearestForecast(90)?.price ?? forecastData.at(-1).price);
   els.volatility.textContent = changeLabel(grade.changePct);
-  els.chartCaption.textContent = `${grade.name} 현재가 ${money(grade.price)}에서 전장 대비 ${changeLabel(grade.changePct)} 흐름을 반영했습니다.`;
+  els.chartCaption.textContent = `${grade.name} 현재가 ${money(grade.price)}에 전장 대비, 계절성, 수매기 공급 압력을 함께 반영했습니다.`;
 
   renderGradeList();
   renderRows();
@@ -205,11 +215,15 @@ function renderInsights(grade, model) {
   const change = ((last.price - grade.price) / grade.price) * 100;
   const marketAverage = average(market.grades.map((item) => item.price));
   const premium = ((grade.price - marketAverage) / marketAverage) * 100;
+  const maxPurchase = forecastData.reduce((target, item) =>
+    item.purchasePct < target.purchasePct ? item : target
+  , forecastData[0]);
 
   els.insights.innerHTML = [
     `${els.horizon.value}일 예측은 현재가 대비 ${signedPct(change)}입니다.`,
     `선택 등급은 주요등급 평균 대비 ${signedPct(premium)} 위치입니다.`,
-    `예측 범위는 인삼통 주요등급 가격 분산 ${money(model.spreadBase)}를 기준으로 계산했습니다.`,
+    `${formatDate(maxPurchase.date)} 부근 수매기 보정은 ${signedPct(maxPurchase.purchasePct)}로 반영됩니다.`,
+    `예측 범위는 인삼통 주요등급 가격 분산 ${money(model.spreadBase)}와 수매기 변동 위험을 기준으로 계산했습니다.`,
   ]
     .map((text) => `<li>${text}</li>`)
     .join("");
@@ -316,6 +330,36 @@ function dispersion(values) {
   return Math.sqrt(average(values.map((value) => (value - mean) ** 2)));
 }
 
+function seasonalFactor(date) {
+  const month = date.getMonth() + 1;
+  const demandByMonth = {
+    1: 0.014,
+    2: 0.016,
+    3: 0.004,
+    4: 0,
+    5: 0.003,
+    6: 0.004,
+    7: 0.006,
+    8: -0.004,
+    9: -0.014,
+    10: -0.018,
+    11: -0.012,
+    12: 0.012,
+  };
+  return demandByMonth[month] ?? 0;
+}
+
+function purchaseFactor(date) {
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+
+  if (month === 9) return day < 15 ? -0.012 : -0.022;
+  if (month === 10) return -0.032;
+  if (month === 11) return day < 20 ? -0.026 : -0.014;
+  if (month === 12) return 0.006;
+  return 0;
+}
+
 function money(value) {
   return `${Math.round(value).toLocaleString("ko-KR")}원`;
 }
@@ -342,6 +386,8 @@ function formatDate(date) {
 els.gradeSelect.addEventListener("input", render);
 els.horizon.addEventListener("input", render);
 els.sensitivity.addEventListener("input", render);
+els.seasonality.addEventListener("input", render);
+els.purchasePressure.addEventListener("input", render);
 els.refreshMarket.addEventListener("click", refreshFromInsamtong);
 window.addEventListener("resize", render);
 
