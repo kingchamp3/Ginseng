@@ -15,6 +15,7 @@ const fallbackMarket = {
     { name: "삼계 / 삼계", price: 37333, changePct: -4 },
     { name: "원료삼 / 파삼", price: 14000, changePct: -2 },
   ],
+  detailGrades: [],
 };
 
 const els = {
@@ -48,7 +49,9 @@ function cloneMarket(value) {
     updatedAt: value.updatedAt ?? null,
     date: new Date(value.date),
     unit: value.unit,
-    grades: value.grades.map((grade) => ({ ...grade })),
+    grades: (value.detailGrades?.length ? value.detailGrades : value.grades).map(normalizeGrade),
+    summaryGrades: value.grades.map(normalizeGrade),
+    detailGrades: (value.detailGrades ?? []).map(normalizeGrade),
   };
 }
 
@@ -95,12 +98,35 @@ function normalizeMarketPayload(payload) {
     updatedAt: payload.updatedAt ?? null,
     date: new Date(`${payload.date}T00:00:00`),
     unit: payload.unit ?? "750g(1채)",
-    grades: payload.grades.map((grade) => ({
-      name: grade.name,
-      price: Number(grade.price),
-      changePct: Number(grade.changePct ?? 0),
-    })),
+    grades: (payload.detailGrades?.length ? payload.detailGrades : payload.grades).map(normalizeGrade),
+    summaryGrades: (payload.grades ?? []).map(normalizeGrade),
+    detailGrades: (payload.detailGrades ?? []).map(normalizeGrade),
   };
+}
+
+function normalizeGrade(grade) {
+  return {
+    ...grade,
+    name: grade.label ?? grade.name,
+    label: grade.label ?? grade.name,
+    price: Number(grade.price),
+    minPrice: nullableNumber(grade.minPrice),
+    maxPrice: nullableNumber(grade.maxPrice),
+    changePct: Number(grade.changePct ?? grade.previousDayPct ?? 0),
+    previousDayPct: nullableNumber(grade.previousDayPct ?? grade.changePct),
+    previousMonthPct: nullableNumber(grade.previousMonthPct),
+    previousYearPct: nullableNumber(grade.previousYearPct),
+    qtyTon: nullableNumber(grade.qtyTon),
+    qtyMonthPct: nullableNumber(grade.qtyMonthPct),
+    qtyYearPct: nullableNumber(grade.qtyYearPct),
+    records: grade.records ?? [],
+  };
+}
+
+function nullableNumber(value) {
+  if (value === null || typeof value === "undefined") return null;
+  const number = Number(value);
+  return Number.isFinite(number) ? number : null;
 }
 
 function parseInsamtong(html) {
@@ -157,6 +183,8 @@ function buildForecast(grade, horizon, sensitivity, seasonality, purchasePressur
   const purchaseStrength = purchasePressure / 100;
   const spreadBase = dispersion(market.grades.map((item) => item.price));
   const changeDrift = grade.price * (grade.changePct / 100) * strength;
+  const rangeSpread = grade.minPrice && grade.maxPrice ? Math.max(0, grade.maxPrice - grade.minPrice) / 2 : 0;
+  const volumePressure = grade.qtyMonthPct ? Math.max(-0.018, Math.min(0.018, -grade.qtyMonthPct / 1000)) : 0;
   const current = { date: market.date, price: grade.price };
   const points = [];
 
@@ -165,9 +193,10 @@ function buildForecast(grade, horizon, sensitivity, seasonality, purchasePressur
     const trendDecay = Math.exp(-day / 75);
     const seasonal = grade.price * seasonalFactor(date) * seasonalStrength;
     const purchase = grade.price * purchaseFactor(date) * purchaseStrength;
-    const estimate = Math.max(1000, grade.price + changeDrift * trendDecay + seasonal + purchase);
+    const volume = grade.price * volumePressure * trendDecay;
+    const estimate = Math.max(1000, grade.price + changeDrift * trendDecay + seasonal + purchase + volume);
     const purchaseRisk = Math.abs(purchaseFactor(date)) * purchaseStrength;
-    const spread = Math.max(450, spreadBase * 0.18) * (1 + day / 180 + purchaseRisk * 0.35);
+    const spread = Math.max(450, spreadBase * 0.12, rangeSpread * 0.35) * (1 + day / 180 + purchaseRisk * 0.35);
     points.push({
       date,
       price: Math.round(estimate),
@@ -196,7 +225,7 @@ function render() {
   els.forecast30.textContent = money(nearestForecast(30)?.price ?? forecastData.at(-1).price);
   els.forecast90.textContent = money(nearestForecast(90)?.price ?? forecastData.at(-1).price);
   els.volatility.textContent = changeLabel(grade.changePct);
-  els.chartCaption.textContent = `${grade.name} 현재가 ${money(grade.price)}에 전장 대비, 계절성, 수매기 공급 압력을 함께 반영했습니다.`;
+  els.chartCaption.textContent = `${grade.name} 현재가 ${money(grade.price)}에 세부 가격 범위, 반입량, 전장 대비, 계절성, 수매기 공급 압력을 반영했습니다.`;
 
   renderGradeList();
   renderRows();
@@ -222,7 +251,7 @@ function renderGradeList() {
       (grade) => `<button class="grade-row${grade.name === currentGrade().name ? " active" : ""}" type="button" data-grade="${grade.name}">
         <span>${grade.name}</span>
         <strong>${money(grade.price)}</strong>
-        <em>${changeLabel(grade.changePct)}</em>
+        <em>${grade.minPrice && grade.maxPrice ? `${money(grade.minPrice)}~${money(grade.maxPrice)} · ` : ""}${changeLabel(grade.changePct)}${grade.qtyTon ? ` · ${grade.qtyTon.toLocaleString("ko-KR")}t` : ""}</em>
       </button>`
     )
     .join("");
@@ -260,6 +289,8 @@ function renderInsights(grade, model) {
   els.insights.innerHTML = [
     `${els.horizon.value}일 예측은 현재가 대비 ${signedPct(change)}입니다.`,
     `선택 등급은 주요등급 평균 대비 ${signedPct(premium)} 위치입니다.`,
+    grade.minPrice && grade.maxPrice ? `최근 세부 거래 범위는 ${money(grade.minPrice)}~${money(grade.maxPrice)}입니다.` : `최근 세부 거래 범위는 제공되지 않았습니다.`,
+    grade.qtyTon ? `최근 전체 반입량은 ${grade.qtyTon.toLocaleString("ko-KR")}t, 전월 대비 ${signedNullablePct(grade.qtyMonthPct)}입니다.` : `최근 반입량은 제공되지 않았습니다.`,
     `${formatDate(maxPurchase.date)} 부근 수매기 보정은 ${signedPct(maxPurchase.purchasePct)}로 반영됩니다.`,
     `예측 범위는 인삼통 주요등급 가격 분산 ${money(model.spreadBase)}와 수매기 변동 위험을 기준으로 계산했습니다.`,
   ]
@@ -409,6 +440,11 @@ function shortMoney(value) {
 function signedPct(value) {
   const sign = value > 0 ? "+" : "";
   return `${sign}${value.toFixed(1)}%`;
+}
+
+function signedNullablePct(value) {
+  if (value === null || typeof value === "undefined") return "-";
+  return signedPct(value);
 }
 
 function changeLabel(value) {
