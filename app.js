@@ -1,7 +1,10 @@
 const dayMs = 24 * 60 * 60 * 1000;
 const sourceUrl = "https://insamtong.kr/";
+const latestDataUrl = "data/insamtong-latest.json";
 
 const fallbackMarket = {
+  sourceUrl,
+  updatedAt: "2026-06-21T00:00:00.000Z",
   date: new Date("2026-06-21T00:00:00"),
   unit: "750g(1채)",
   grades: [
@@ -41,14 +44,34 @@ let forecastData = [];
 
 function cloneMarket(value) {
   return {
+    sourceUrl: value.sourceUrl ?? sourceUrl,
+    updatedAt: value.updatedAt ?? null,
     date: new Date(value.date),
     unit: value.unit,
     grades: value.grades.map((grade) => ({ ...grade })),
   };
 }
 
+async function loadLatestMarket(showMessage = false) {
+  if (showMessage) els.refreshMessage.textContent = "저장소의 최신 인삼통 수치를 확인하는 중입니다.";
+
+  try {
+    const response = await fetch(`${latestDataUrl}?v=${Date.now()}`, { cache: "no-store" });
+    if (!response.ok) throw new Error(`JSON 요청 실패: ${response.status}`);
+    const payload = await response.json();
+    market = normalizeMarketPayload(payload);
+    syncGradeOptions();
+    render();
+    if (showMessage) els.refreshMessage.textContent = "최신 인삼통 저장 데이터를 반영했습니다.";
+  } catch (error) {
+    if (showMessage) {
+      els.refreshMessage.textContent = "최신 저장 데이터를 불러오지 못해 내장 기준 수치를 사용합니다.";
+    }
+  }
+}
+
 async function refreshFromInsamtong() {
-  els.refreshMessage.textContent = "인삼통 수치를 가져오는 중입니다.";
+  els.refreshMessage.textContent = "인삼통 수치를 직접 가져오는 중입니다.";
 
   try {
     const response = await fetch(sourceUrl, { cache: "no-store" });
@@ -62,9 +85,22 @@ async function refreshFromInsamtong() {
     render();
     els.refreshMessage.textContent = "인삼통 최신 수치를 반영했습니다.";
   } catch (error) {
-    els.refreshMessage.textContent =
-      "브라우저 보안 정책으로 자동 새로고침이 막히면, 앱에 내장된 인삼통 기준 수치를 사용합니다.";
+    await loadLatestMarket(true);
   }
+}
+
+function normalizeMarketPayload(payload) {
+  return {
+    sourceUrl: payload.sourceUrl ?? sourceUrl,
+    updatedAt: payload.updatedAt ?? null,
+    date: new Date(`${payload.date}T00:00:00`),
+    unit: payload.unit ?? "750g(1채)",
+    grades: payload.grades.map((grade) => ({
+      name: grade.name,
+      price: Number(grade.price),
+      changePct: Number(grade.changePct ?? 0),
+    })),
+  };
 }
 
 function parseInsamtong(html) {
@@ -96,6 +132,8 @@ function parseInsamtong(html) {
     .filter(Boolean);
 
   return {
+    sourceUrl,
+    updatedAt: new Date().toISOString(),
     date: dateMatch
       ? new Date(`${dateMatch[1]}-${dateMatch[2].padStart(2, "0")}-${dateMatch[3].padStart(2, "0")}T00:00:00`)
       : new Date(),
@@ -153,7 +191,7 @@ function render() {
   forecastData = model.points;
 
   els.modelStatus.textContent = `인삼통 ${formatDate(market.date)} 기준`;
-  els.sourceText.textContent = `출처: 인삼통 주요등급 가격동향, ${formatDate(market.date)} 기준, 단위 ${market.unit}`;
+  els.sourceText.textContent = `출처: 인삼통 주요등급 가격동향, ${formatDate(market.date)} 기준, 단위 ${market.unit}${market.updatedAt ? `, 갱신 ${formatDateTime(market.updatedAt)}` : ""}`;
   els.currentPrice.textContent = money(grade.price);
   els.forecast30.textContent = money(nearestForecast(30)?.price ?? forecastData.at(-1).price);
   els.forecast90.textContent = money(nearestForecast(90)?.price ?? forecastData.at(-1).price);
@@ -383,6 +421,16 @@ function formatDate(date) {
   return date.toISOString().slice(0, 10);
 }
 
+function formatDateTime(value) {
+  const date = new Date(value);
+  if (!Number.isFinite(date.getTime())) return "";
+  return new Intl.DateTimeFormat("ko-KR", {
+    dateStyle: "short",
+    timeStyle: "short",
+    timeZone: "Asia/Seoul",
+  }).format(date);
+}
+
 els.gradeSelect.addEventListener("input", render);
 els.horizon.addEventListener("input", render);
 els.sensitivity.addEventListener("input", render);
@@ -408,3 +456,4 @@ els.downloadCsv.addEventListener("click", () => {
 
 syncGradeOptions();
 render();
+loadLatestMarket();

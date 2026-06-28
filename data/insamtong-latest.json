@@ -1,0 +1,38 @@
+{
+  "sourceUrl": "https://insamtong.kr/",
+  "updatedAt": "2026-06-28T12:55:37.732Z",
+  "date": "2026-06-21",
+  "unit": "750g(1채)",
+  "grades": [
+    {
+      "name": "원삼 / 대",
+      "price": 47500,
+      "changePct": 0
+    },
+    {
+      "name": "원삼 / 믹서",
+      "price": 39000,
+      "changePct": 0
+    },
+    {
+      "name": "난발삼 / 잔난",
+      "price": 35000,
+      "changePct": 0
+    },
+    {
+      "name": "난발삼 / 콩콩콩난",
+      "price": 30750,
+      "changePct": 0
+    },
+    {
+      "name": "삼계 / 삼계",
+      "price": 37333,
+      "changePct": -3
+    },
+    {
+      "name": "원료삼 / 파삼",
+      "price": 14000,
+      "changePct": -3
+    }
+  ]
+}
