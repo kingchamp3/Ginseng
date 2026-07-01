@@ -367,6 +367,69 @@ tr:last-child td {
   line-height: 1.5;
 }
 
+.info-hero {
+  margin-bottom: 14px;
+  border: 1px solid rgba(31, 122, 77, 0.18);
+  border-radius: 8px;
+  padding: 22px;
+  background:
+    linear-gradient(135deg, rgba(31, 122, 77, 0.10), rgba(183, 132, 47, 0.13)),
+    #fff;
+}
+
+.info-hero span {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--gold);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.info-hero strong {
+  display: block;
+  max-width: 860px;
+  font-size: 22px;
+  line-height: 1.45;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.info-card,
+.info-note {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 18px;
+  background: #fff;
+}
+
+.info-card h3 {
+  margin: 0 0 10px;
+  font-size: 17px;
+}
+
+.info-card p,
+.info-note p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.info-note {
+  margin-top: 12px;
+  border-color: rgba(183, 132, 47, 0.26);
+  background: #fffdf8;
+}
+
+.info-note strong {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--gold);
+}
+
 .empty-state {
   color: var(--muted);
 }
@@ -398,7 +461,8 @@ tr:last-child td {
 
   .entry-grid,
   .schedule-grid,
-  .market-summary {
+  .market-summary,
+  .info-grid {
     grid-template-columns: 1fr;
   }
 
