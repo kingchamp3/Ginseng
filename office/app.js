@@ -6,6 +6,7 @@
     authed: "ginsengOfficeAuthed",
     inventory: "ginsengOfficeInventory",
     schedule: "ginsengOfficeSchedule",
+    memos: "ginsengOfficeMemos",
     prices: "ginsengOfficePrices",
     market: "ginsengOfficeMarket"
   };
@@ -36,6 +37,7 @@
   const state = {
     inventory: loadList(storageKeys.inventory, initialInventory),
     schedule: loadList(storageKeys.schedule, initialSchedule),
+    memos: loadObject(storageKeys.memos, {}),
     prices: loadList(storageKeys.prices, initialPrices),
     market: loadMarket()
   };
@@ -57,6 +59,12 @@
     scheduleForm: document.getElementById("scheduleForm"),
     addScheduleButton: document.getElementById("addScheduleButton"),
     scheduleList: document.getElementById("scheduleList"),
+    memoDate: document.getElementById("memoDate"),
+    memoText: document.getElementById("memoText"),
+    saveMemoButton: document.getElementById("saveMemoButton"),
+    deleteMemoButton: document.getElementById("deleteMemoButton"),
+    memoStatus: document.getElementById("memoStatus"),
+    memoList: document.getElementById("memoList"),
     priceForm: document.getElementById("priceForm"),
     addPriceButton: document.getElementById("addPriceButton"),
     priceRows: document.getElementById("priceRows"),
@@ -130,6 +138,11 @@
       addFromForm(els.priceForm, state.prices, storageKeys.prices, renderPrices);
     });
 
+    els.memoDate.value = todayISO();
+    els.memoDate.addEventListener("change", loadSelectedMemo);
+    els.saveMemoButton.addEventListener("click", saveCurrentMemo);
+    els.deleteMemoButton.addEventListener("click", deleteCurrentMemo);
+
     els.refreshMarketButton.addEventListener("click", function () {
       refreshMarket(true);
     });
@@ -157,6 +170,7 @@
   function renderAll() {
     renderInventory();
     renderSchedule();
+    renderMemos();
     renderPrices();
     renderMarket();
   }
@@ -223,6 +237,73 @@
         }));
         els.scheduleList.appendChild(item);
       });
+  }
+
+  function loadSelectedMemo() {
+    const date = els.memoDate.value || todayISO();
+    const memo = state.memos[date];
+    els.memoText.value = memo ? memo.text : "";
+    els.memoStatus.textContent = memo
+      ? "마지막 저장: " + formatDateTime(new Date(memo.updatedAt))
+      : "선택한 날짜에 저장된 메모가 없습니다.";
+  }
+
+  function saveCurrentMemo() {
+    const date = els.memoDate.value || todayISO();
+    const text = els.memoText.value.trim();
+    if (!text) {
+      els.memoStatus.textContent = "메모 내용을 입력한 뒤 저장해 주세요.";
+      return;
+    }
+    state.memos[date] = {
+      text: text,
+      updatedAt: new Date().toISOString()
+    };
+    saveObject(storageKeys.memos, state.memos);
+    renderMemos();
+    els.memoStatus.textContent = "저장되었습니다: " + formatDateTime(new Date(state.memos[date].updatedAt));
+  }
+
+  function deleteCurrentMemo() {
+    const date = els.memoDate.value || todayISO();
+    if (!state.memos[date]) {
+      els.memoStatus.textContent = "삭제할 메모가 없습니다.";
+      return;
+    }
+    delete state.memos[date];
+    saveObject(storageKeys.memos, state.memos);
+    els.memoText.value = "";
+    renderMemos();
+    els.memoStatus.textContent = "선택한 날짜의 메모를 삭제했습니다.";
+  }
+
+  function renderMemos() {
+    els.memoList.innerHTML = "";
+    loadSelectedMemo();
+    const dates = Object.keys(state.memos).sort(function (a, b) {
+      return b.localeCompare(a);
+    });
+    if (!dates.length) {
+      const empty = document.createElement("div");
+      empty.className = "empty-state memo-empty";
+      empty.textContent = "저장된 메모가 없습니다.";
+      els.memoList.appendChild(empty);
+      return;
+    }
+    dates.forEach(function (date) {
+      const memo = state.memos[date];
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "memo-list-item";
+      button.innerHTML = "<strong></strong><span></span>";
+      button.querySelector("strong").textContent = date;
+      button.querySelector("span").textContent = previewText(memo.text);
+      button.addEventListener("click", function () {
+        els.memoDate.value = date;
+        loadSelectedMemo();
+      });
+      els.memoList.appendChild(button);
+    });
   }
 
   function renderPrices() {
@@ -352,6 +433,15 @@
     }
   }
 
+  function loadObject(key, fallback) {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(key));
+      return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : Object.assign({}, fallback);
+    } catch (error) {
+      return Object.assign({}, fallback);
+    }
+  }
+
   function loadMarket() {
     try {
       const parsed = JSON.parse(localStorage.getItem(storageKeys.market));
@@ -363,6 +453,15 @@
 
   function saveList(key, list) {
     localStorage.setItem(key, JSON.stringify(list));
+  }
+
+  function saveObject(key, value) {
+    localStorage.setItem(key, JSON.stringify(value));
+  }
+
+  function previewText(text) {
+    const singleLine = text.replace(/\s+/g, " ").trim();
+    return singleLine.length > 46 ? singleLine.slice(0, 46) + "..." : singleLine;
   }
 
   function formatWon(value) {

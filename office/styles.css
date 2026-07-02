@@ -113,7 +113,24 @@ input {
   background: #fff;
 }
 
+textarea {
+  width: 100%;
+  resize: vertical;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 14px;
+  color: var(--ink);
+  background: #fff;
+  font: inherit;
+  line-height: 1.6;
+}
+
 input:focus {
+  border-color: var(--green);
+  outline: 3px solid rgba(31, 122, 77, 0.14);
+}
+
+textarea:focus {
   border-color: var(--green);
   outline: 3px solid rgba(31, 122, 77, 0.14);
 }
@@ -325,6 +342,98 @@ tr:last-child td {
   font-size: 14px;
 }
 
+.memo-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 14px;
+  align-items: start;
+}
+
+.memo-editor,
+.memo-list-panel {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 16px;
+  background: #fff;
+}
+
+.memo-date-row {
+  display: grid;
+  grid-template-columns: 110px minmax(180px, 260px);
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.memo-date-row label,
+.memo-list-panel h3 {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.memo-list-panel h3 {
+  margin: 0 0 12px;
+}
+
+.memo-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.memo-status {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.memo-list {
+  display: grid;
+  gap: 8px;
+}
+
+.memo-list-item {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 12px;
+  background: #fbfdfb;
+  color: var(--ink);
+  text-align: left;
+}
+
+.memo-list-item:hover {
+  border-color: rgba(31, 122, 77, 0.24);
+  background: rgba(31, 122, 77, 0.07);
+}
+
+.memo-list-item strong,
+.memo-list-item span {
+  display: block;
+}
+
+.memo-list-item strong {
+  margin-bottom: 5px;
+  color: var(--green-deep);
+  font-size: 14px;
+}
+
+.memo-list-item span {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.memo-empty {
+  border: 1px dashed var(--line);
+  border-radius: 6px;
+  padding: 14px;
+}
+
 .market-summary {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -462,7 +571,15 @@ tr:last-child td {
   .entry-grid,
   .schedule-grid,
   .market-summary,
-  .info-grid {
+  .info-grid,
+  .memo-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .memo-actions,
+  .memo-date-row {
+    align-items: stretch;
+    flex-direction: column;
     grid-template-columns: 1fr;
   }
 
