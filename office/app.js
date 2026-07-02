@@ -86,12 +86,21 @@
   boot();
 
   function boot() {
-    els.todayStamp.textContent = formatDateTime(new Date());
+    startLiveClock();
     bindEvents();
     renderAll();
     if (sessionStorage.getItem(storageKeys.authed) === "1") {
       showWorkspace();
     }
+  }
+
+  function startLiveClock() {
+    updateLiveClock();
+    setInterval(updateLiveClock, 1000);
+  }
+
+  function updateLiveClock() {
+    els.todayStamp.textContent = formatDateTimeWithSeconds(new Date());
   }
 
   function bindEvents() {
@@ -647,6 +656,17 @@
       day: "2-digit",
       hour: "2-digit",
       minute: "2-digit"
+    });
+  }
+
+  function formatDateTimeWithSeconds(date) {
+    return date.toLocaleString("ko-KR", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit"
     });
   }
 
