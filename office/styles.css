@@ -284,6 +284,13 @@ textarea:focus {
   color: var(--muted);
 }
 
+.section-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
 .entry-grid {
   display: grid;
   grid-template-columns: 1.3fr 1fr 0.7fr 1fr;
@@ -614,6 +621,10 @@ tr:last-child td {
   .section-head {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .section-actions {
+    justify-content: flex-start;
   }
 
   .entry-grid,
