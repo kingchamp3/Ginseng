@@ -670,6 +670,34 @@ tr:last-child td {
   line-height: 1.65;
 }
 
+.info-list {
+  display: grid;
+  gap: 7px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.info-list li {
+  border-left: 3px solid rgba(31, 122, 77, 0.24);
+  padding-left: 10px;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.info-list strong {
+  color: var(--green-deep);
+}
+
+.info-table-wrap {
+  margin-top: 12px;
+}
+
+.info-table-wrap td:first-child {
+  color: var(--green-deep);
+  font-weight: 900;
+}
+
 .info-note {
   margin-top: 12px;
   border-color: rgba(183, 132, 47, 0.26);
@@ -680,6 +708,11 @@ tr:last-child td {
   display: block;
   margin-bottom: 8px;
   color: var(--gold);
+}
+
+.info-note .info-caution {
+  margin-top: 8px;
+  font-size: 14px;
 }
 
 .empty-state {
