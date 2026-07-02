@@ -610,8 +610,9 @@
 
     const recognition = new SpeechRecognition();
     recognition.lang = "ko-KR";
-    recognition.continuous = true;
-    recognition.interimResults = true;
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
     let isListening = false;
     let processedFinalResults = new Set();
 
@@ -627,8 +628,8 @@
     recognition.addEventListener("start", function () {
       isListening = true;
       els.voiceMemoButton.classList.add("listening");
-      els.voiceMemoButton.textContent = "음성 입력 중지";
-      els.memoStatus.textContent = "듣고 있습니다. 말한 내용이 메모에 추가됩니다.";
+      els.voiceMemoButton.textContent = "듣는 중";
+      els.memoStatus.textContent = "듣고 있습니다. 한 문장을 말하면 메모에 추가됩니다.";
     });
 
     recognition.addEventListener("result", function (event) {
@@ -659,7 +660,7 @@
       els.voiceMemoButton.classList.remove("listening");
       els.voiceMemoButton.textContent = "음성 입력";
       if (!els.memoStatus.textContent.startsWith("인식 오류")) {
-        els.memoStatus.textContent = "음성 입력이 종료되었습니다. 필요하면 저장 버튼을 눌러 주세요.";
+        els.memoStatus.textContent = "음성 입력이 종료되었습니다. 다음 문장은 음성 입력을 다시 눌러 주세요.";
       }
     });
 
@@ -1098,7 +1099,7 @@
       return "인식 오류: 들리는 음성이 없습니다. 다시 눌러 말해 주세요.";
     }
     if (errorCode === "network") {
-      return "인식 오류: 음성 인식 네트워크 연결을 확인해 주세요.";
+      return "인식 오류: 브라우저 음성 인식 서비스 연결에 실패했습니다. Chrome 또는 Edge에서 새로고침 후 다시 시도해 주세요.";
     }
     return "인식 오류: 음성 입력을 다시 시도해 주세요.";
   }
