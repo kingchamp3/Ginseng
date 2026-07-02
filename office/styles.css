@@ -136,7 +136,8 @@ textarea:focus {
 }
 
 .password-row button,
-.primary-button {
+.primary-button,
+.secondary-button {
   min-height: 44px;
   border: 0;
   border-radius: 6px;
@@ -147,9 +148,31 @@ textarea:focus {
   white-space: nowrap;
 }
 
+.secondary-button {
+  border: 1px solid rgba(31, 122, 77, 0.22);
+  color: var(--green-deep);
+  background: #f5fbf7;
+}
+
+.secondary-button.listening {
+  border-color: rgba(168, 73, 50, 0.28);
+  color: var(--red);
+  background: #fff8f6;
+}
+
+.secondary-button:disabled {
+  cursor: not-allowed;
+  color: var(--muted);
+  background: #f3f4f3;
+}
+
 .password-row button:hover,
 .primary-button:hover {
   background: var(--green-deep);
+}
+
+.secondary-button:not(:disabled):hover {
+  background: rgba(31, 122, 77, 0.10);
 }
 
 .form-message {
@@ -349,6 +372,24 @@ tr:last-child td {
   align-items: start;
 }
 
+.voice-notice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  border: 1px solid rgba(31, 122, 77, 0.18);
+  border-radius: 8px;
+  padding: 12px 14px;
+  background: rgba(31, 122, 77, 0.07);
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.voice-notice strong {
+  color: var(--green-deep);
+  white-space: nowrap;
+}
+
 .memo-editor,
 .memo-list-panel {
   border: 1px solid var(--line);
@@ -382,6 +423,13 @@ tr:last-child td {
   justify-content: space-between;
   gap: 12px;
   margin-top: 12px;
+}
+
+.memo-button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
 }
 
 .memo-status {
@@ -577,6 +625,8 @@ tr:last-child td {
   }
 
   .memo-actions,
+  .memo-button-row,
+  .voice-notice,
   .memo-date-row {
     align-items: stretch;
     flex-direction: column;

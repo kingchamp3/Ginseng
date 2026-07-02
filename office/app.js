@@ -2,6 +2,7 @@
   const PASSWORD_HASH = "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4";
   const INSAMTONG_URL = "https://insamtong.kr/";
   const MARKET_PROXY_URL = "https://api.allorigins.win/raw?url=" + encodeURIComponent(INSAMTONG_URL);
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   const storageKeys = {
     authed: "ginsengOfficeAuthed",
     inventory: "ginsengOfficeInventory",
@@ -62,6 +63,7 @@
     memoDate: document.getElementById("memoDate"),
     memoText: document.getElementById("memoText"),
     saveMemoButton: document.getElementById("saveMemoButton"),
+    voiceMemoButton: document.getElementById("voiceMemoButton"),
     deleteMemoButton: document.getElementById("deleteMemoButton"),
     memoStatus: document.getElementById("memoStatus"),
     memoList: document.getElementById("memoList"),
@@ -142,6 +144,7 @@
     els.memoDate.addEventListener("change", loadSelectedMemo);
     els.saveMemoButton.addEventListener("click", saveCurrentMemo);
     els.deleteMemoButton.addEventListener("click", deleteCurrentMemo);
+    setupVoiceMemo();
 
     els.refreshMarketButton.addEventListener("click", function () {
       refreshMarket(true);
@@ -306,6 +309,73 @@
     });
   }
 
+  function setupVoiceMemo() {
+    if (!SpeechRecognition) {
+      els.voiceMemoButton.disabled = true;
+      els.voiceMemoButton.textContent = "음성 입력 불가";
+      els.memoStatus.textContent = "이 브라우저는 음성 입력을 지원하지 않습니다. Chrome 또는 Edge에서 이용해 주세요.";
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = "ko-KR";
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    let isListening = false;
+    let finalTranscript = "";
+
+    els.voiceMemoButton.addEventListener("click", function () {
+      if (isListening) {
+        recognition.stop();
+        return;
+      }
+      finalTranscript = "";
+      recognition.start();
+    });
+
+    recognition.addEventListener("start", function () {
+      isListening = true;
+      els.voiceMemoButton.classList.add("listening");
+      els.voiceMemoButton.textContent = "음성 입력 중지";
+      els.memoStatus.textContent = "듣고 있습니다. 말한 내용이 메모에 추가됩니다.";
+    });
+
+    recognition.addEventListener("result", function (event) {
+      let interimTranscript = "";
+      for (let index = event.resultIndex; index < event.results.length; index += 1) {
+        const transcript = event.results[index][0].transcript.trim();
+        if (event.results[index].isFinal) {
+          finalTranscript += transcript + " ";
+        } else {
+          interimTranscript += transcript + " ";
+        }
+      }
+      if (finalTranscript) {
+        appendMemoText(finalTranscript.trim());
+        finalTranscript = "";
+      }
+      if (interimTranscript) {
+        els.memoStatus.textContent = "인식 중: " + interimTranscript.trim();
+      }
+    });
+
+    recognition.addEventListener("end", function () {
+      isListening = false;
+      els.voiceMemoButton.classList.remove("listening");
+      els.voiceMemoButton.textContent = "음성 입력";
+      if (!els.memoStatus.textContent.startsWith("인식 오류")) {
+        els.memoStatus.textContent = "음성 입력이 종료되었습니다. 필요하면 저장 버튼을 눌러 주세요.";
+      }
+    });
+
+    recognition.addEventListener("error", function (event) {
+      isListening = false;
+      els.voiceMemoButton.classList.remove("listening");
+      els.voiceMemoButton.textContent = "음성 입력";
+      els.memoStatus.textContent = voiceErrorMessage(event.error);
+    });
+  }
+
   function renderPrices() {
     els.priceRows.innerHTML = "";
     if (!state.prices.length) {
@@ -457,6 +527,26 @@
 
   function saveObject(key, value) {
     localStorage.setItem(key, JSON.stringify(value));
+  }
+
+  function appendMemoText(text) {
+    if (!text) return;
+    const current = els.memoText.value.trim();
+    const separator = current ? "\n" : "";
+    els.memoText.value = current + separator + text;
+  }
+
+  function voiceErrorMessage(errorCode) {
+    if (errorCode === "not-allowed" || errorCode === "service-not-allowed") {
+      return "인식 오류: 마이크 권한이 허용되지 않았습니다.";
+    }
+    if (errorCode === "no-speech") {
+      return "인식 오류: 들리는 음성이 없습니다. 다시 눌러 말해 주세요.";
+    }
+    if (errorCode === "network") {
+      return "인식 오류: 음성 인식 네트워크 연결을 확인해 주세요.";
+    }
+    return "인식 오류: 음성 입력을 다시 시도해 주세요.";
   }
 
   function previewText(text) {
