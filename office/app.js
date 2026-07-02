@@ -322,14 +322,14 @@
     recognition.continuous = true;
     recognition.interimResults = true;
     let isListening = false;
-    let finalTranscript = "";
+    let processedFinalResults = new Set();
 
     els.voiceMemoButton.addEventListener("click", function () {
       if (isListening) {
         recognition.stop();
         return;
       }
-      finalTranscript = "";
+      processedFinalResults = new Set();
       recognition.start();
     });
 
@@ -341,18 +341,22 @@
     });
 
     recognition.addEventListener("result", function (event) {
+      const finalParts = [];
       let interimTranscript = "";
       for (let index = event.resultIndex; index < event.results.length; index += 1) {
         const transcript = event.results[index][0].transcript.trim();
         if (event.results[index].isFinal) {
-          finalTranscript += transcript + " ";
+          if (transcript && !processedFinalResults.has(index)) {
+            processedFinalResults.add(index);
+            finalParts.push(transcript);
+          }
         } else {
           interimTranscript += transcript + " ";
         }
       }
-      if (finalTranscript) {
-        appendMemoText(finalTranscript.trim());
-        finalTranscript = "";
+      if (finalParts.length) {
+        appendMemoText(finalParts.join(" "));
+        els.memoStatus.textContent = "음성 문장을 메모에 추가했습니다.";
       }
       if (interimTranscript) {
         els.memoStatus.textContent = "인식 중: " + interimTranscript.trim();
