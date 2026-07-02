@@ -6,7 +6,9 @@
   --panel: #ffffff;
   --green: #1f7a4d;
   --green-deep: #155b3a;
+  --green-soft: #77a95e;
   --gold: #b7842f;
+  --gold-soft: #e3c16f;
   --red: #a84932;
   --shadow: 0 18px 50px rgba(31, 42, 36, 0.12);
 }
@@ -25,8 +27,11 @@ body {
   color: var(--ink);
   font-family: "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif;
   background:
-    linear-gradient(135deg, rgba(31, 122, 77, 0.12), rgba(183, 132, 47, 0.10)),
+    linear-gradient(135deg, rgba(31, 122, 77, 0.18), rgba(227, 193, 111, 0.12), rgba(119, 169, 94, 0.15)),
     var(--paper);
+  background-size: 180% 180%;
+  animation: pageGradient 16s ease-in-out infinite;
+  overflow-x: hidden;
 }
 
 button,
@@ -39,7 +44,24 @@ button {
 }
 
 .app-shell {
+  position: relative;
   min-height: 100vh;
+  isolation: isolate;
+}
+
+.ambient-particles {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.62;
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.72) 0 1px, transparent 1.8px),
+    radial-gradient(circle, rgba(31, 122, 77, 0.26) 0 1px, transparent 2px),
+    radial-gradient(circle, rgba(183, 132, 47, 0.24) 0 1px, transparent 2px);
+  background-position: 0 0, 38px 24px, 14px 48px;
+  background-size: 92px 92px, 138px 138px, 176px 176px;
+  animation: particleDrift 24s linear infinite;
 }
 
 .login-screen {
@@ -47,6 +69,7 @@ button {
   min-height: 100vh;
   place-items: center;
   padding: 24px;
+  animation: fadeIn 0.7s ease-out both;
 }
 
 .login-panel {
@@ -54,21 +77,32 @@ button {
   padding: 36px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.94);
-  box-shadow: var(--shadow);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(250, 253, 249, 0.94));
+  box-shadow: var(--shadow), 0 0 0 1px rgba(255, 255, 255, 0.55) inset;
+  animation: panelRise 0.6s ease-out both;
 }
 
 .brand-mark {
   display: grid;
-  width: 58px;
-  height: 58px;
+  width: 62px;
+  height: 62px;
   margin-bottom: 18px;
   place-items: center;
-  border-radius: 50%;
+  border-radius: 18px;
   color: #fff;
-  background: linear-gradient(145deg, var(--green), var(--gold));
-  font-size: 24px;
+  background: linear-gradient(145deg, var(--green-deep), var(--green), var(--gold));
+  box-shadow: 0 12px 26px rgba(31, 122, 77, 0.24);
+  font-size: 25px;
   font-weight: 800;
+}
+
+.brand-mark.compact {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  margin: 0;
+  border-radius: 13px;
+  font-size: 19px;
 }
 
 .eyebrow {
@@ -186,6 +220,7 @@ textarea:focus {
   display: grid;
   min-height: 100vh;
   grid-template-columns: 260px 1fr;
+  animation: fadeIn 0.45s ease-out both;
 }
 
 .sidebar {
@@ -195,7 +230,14 @@ textarea:focus {
   gap: 28px;
   border-right: 1px solid var(--line);
   padding: 28px 18px;
-  background: #fff;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .sidebar h2 {
@@ -235,6 +277,7 @@ textarea:focus {
 .content {
   min-width: 0;
   padding: 28px;
+  animation: panelRise 0.48s ease-out both;
 }
 
 .topbar {
@@ -660,5 +703,56 @@ tr:last-child td {
 
   .menu {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@keyframes pageGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes particleDrift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-92px, -138px, 0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes panelRise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
