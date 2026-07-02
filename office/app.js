@@ -12,10 +12,13 @@
     market: "ginsengOfficeMarket"
   };
 
-  const initialInventory = [
-    { item: "수삼", grade: "특대", quantity: 24, location: "저온창고 A" },
-    { item: "수삼", grade: "대", quantity: 38, location: "저온창고 B" },
-    { item: "홍삼 제품", grade: "선물세트", quantity: 16, location: "매장 진열" }
+  const inventoryBranches = [
+    { id: "ganghwa", name: "강화농협" },
+    { id: "ganghwa-nambu", name: "강화남부농협" },
+    { id: "gyeyang", name: "계양농협" },
+    { id: "geomdan", name: "검단농협" },
+    { id: "namdong", name: "남동농협" },
+    { id: "singanseok", name: "신간석지점" }
   ];
 
   const initialSchedule = [
@@ -36,7 +39,8 @@
   ];
 
   const state = {
-    inventory: loadList(storageKeys.inventory, initialInventory),
+    inventory: loadInventory(),
+    activeInventoryBranch: inventoryBranches[0].id,
     schedule: loadList(storageKeys.schedule, initialSchedule),
     memos: loadObject(storageKeys.memos, {}),
     prices: loadList(storageKeys.prices, initialPrices),
@@ -54,6 +58,8 @@
     views: Array.from(document.querySelectorAll(".view")),
     viewTitle: document.getElementById("viewTitle"),
     todayStamp: document.getElementById("todayStamp"),
+    inventoryBranchTabs: document.getElementById("inventoryBranchTabs"),
+    activeInventoryBranchName: document.getElementById("activeInventoryBranchName"),
     inventoryForm: document.getElementById("inventoryForm"),
     addInventoryButton: document.getElementById("addInventoryButton"),
     inventoryRows: document.getElementById("inventoryRows"),
@@ -116,12 +122,14 @@
       });
     });
 
+    renderInventoryBranchTabs();
+
     els.addInventoryButton.addEventListener("click", function () {
-      addFromForm(els.inventoryForm, state.inventory, storageKeys.inventory, renderInventory);
+      addInventoryFromForm();
     });
     els.inventoryForm.addEventListener("submit", function (event) {
       event.preventDefault();
-      addFromForm(els.inventoryForm, state.inventory, storageKeys.inventory, renderInventory);
+      addInventoryFromForm();
     });
 
     els.addScheduleButton.addEventListener("click", function () {
@@ -189,13 +197,26 @@
     render();
   }
 
+  function addInventoryFromForm() {
+    if (!els.inventoryForm.reportValidity()) return;
+    const data = Object.fromEntries(new FormData(els.inventoryForm).entries());
+    data.quantity = Number(data.quantity);
+    currentInventoryList().push(data);
+    saveObject(storageKeys.inventory, state.inventory);
+    els.inventoryForm.reset();
+    renderInventory();
+  }
+
   function renderInventory() {
+    const branch = currentInventoryBranch();
+    const list = currentInventoryList();
+    els.activeInventoryBranchName.textContent = branch.name;
     els.inventoryRows.innerHTML = "";
-    if (!state.inventory.length) {
-      els.inventoryRows.appendChild(emptyRow(5, "등록된 재고가 없습니다."));
+    if (!list.length) {
+      els.inventoryRows.appendChild(emptyRow(5, branch.name + "에 등록된 재고가 없습니다."));
       return;
     }
-    state.inventory.forEach(function (row, index) {
+    list.forEach(function (row, index) {
       const tr = document.createElement("tr");
       tr.innerHTML = "<td></td><td></td><td></td><td></td><td></td>";
       tr.children[0].textContent = row.item;
@@ -203,12 +224,43 @@
       tr.children[2].textContent = Number(row.quantity).toLocaleString("ko-KR");
       tr.children[3].textContent = row.location || "-";
       tr.children[4].appendChild(deleteButton(function () {
-        state.inventory.splice(index, 1);
-        saveList(storageKeys.inventory, state.inventory);
+        list.splice(index, 1);
+        saveObject(storageKeys.inventory, state.inventory);
         renderInventory();
       }));
       els.inventoryRows.appendChild(tr);
     });
+  }
+
+  function renderInventoryBranchTabs() {
+    els.inventoryBranchTabs.innerHTML = "";
+    inventoryBranches.forEach(function (branch) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "branch-tab";
+      button.textContent = branch.name;
+      button.dataset.branch = branch.id;
+      button.addEventListener("click", function () {
+        state.activeInventoryBranch = branch.id;
+        renderInventoryBranchTabs();
+        renderInventory();
+      });
+      button.classList.toggle("active", branch.id === state.activeInventoryBranch);
+      els.inventoryBranchTabs.appendChild(button);
+    });
+  }
+
+  function currentInventoryBranch() {
+    return inventoryBranches.find(function (branch) {
+      return branch.id === state.activeInventoryBranch;
+    }) || inventoryBranches[0];
+  }
+
+  function currentInventoryList() {
+    if (!Array.isArray(state.inventory[state.activeInventoryBranch])) {
+      state.inventory[state.activeInventoryBranch] = [];
+    }
+    return state.inventory[state.activeInventoryBranch];
   }
 
   function renderSchedule() {
@@ -505,6 +557,32 @@
     } catch (error) {
       return fallback.slice();
     }
+  }
+
+  function loadInventory() {
+    const emptyInventory = inventoryBranches.reduce(function (result, branch) {
+      result[branch.id] = [];
+      return result;
+    }, {});
+    try {
+      const parsed = JSON.parse(localStorage.getItem(storageKeys.inventory));
+      if (Array.isArray(parsed)) {
+        emptyInventory[inventoryBranches[0].id] = parsed;
+        localStorage.setItem(storageKeys.inventory, JSON.stringify(emptyInventory));
+        return emptyInventory;
+      }
+      if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+        inventoryBranches.forEach(function (branch) {
+          if (!Array.isArray(parsed[branch.id])) {
+            parsed[branch.id] = [];
+          }
+        });
+        return parsed;
+      }
+    } catch (error) {
+      return emptyInventory;
+    }
+    return emptyInventory;
   }
 
   function loadObject(key, fallback) {

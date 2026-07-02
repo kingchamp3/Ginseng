@@ -58,9 +58,14 @@
           <div class="section-head">
             <div>
               <h2>재고 현황</h2>
-              <p>품목, 규격, 수량, 보관 위치를 빠르게 기록합니다.</p>
+              <p>농협/지점별로 품목, 규격, 수량, 보관 위치를 빠르게 기록합니다.</p>
             </div>
             <button id="addInventoryButton" class="primary-button" type="button">추가</button>
+          </div>
+          <div id="inventoryBranchTabs" class="branch-tabs" aria-label="재고 지점 선택"></div>
+          <div class="branch-summary">
+            <span>선택 지점</span>
+            <strong id="activeInventoryBranchName">강화농협</strong>
           </div>
           <form id="inventoryForm" class="entry-grid">
             <input name="item" placeholder="품목명" required>
