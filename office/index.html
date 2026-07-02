@@ -35,12 +35,19 @@
           </div>
         </div>
         <nav class="menu" aria-label="업무 메뉴">
-          <button class="menu-button active" data-view="inventoryView" type="button">재고관리</button>
+          <button class="menu-button active" data-view="dashboardView" type="button">대시보드</button>
+          <button class="menu-button" data-view="todoView" type="button">할일</button>
+          <button class="menu-button" data-view="orderView" type="button">발주관리</button>
           <button class="menu-button" data-view="scheduleView" type="button">일정관리</button>
+          <button class="menu-button" data-view="factoryView" type="button">공장업무</button>
+          <button class="menu-button" data-view="inventoryView" type="button">재고관리</button>
           <button class="menu-button" data-view="memoView" type="button">메모</button>
+          <button class="menu-button" data-view="contactView" type="button">연락처</button>
+          <button class="menu-button" data-view="calculatorView" type="button">계산기</button>
           <button class="menu-button" data-view="priceView" type="button">가격표</button>
           <button class="menu-button" data-view="ginsengInfoView" type="button">인삼정보</button>
           <button class="menu-button" data-view="marketView" type="button">인삼시세표</button>
+          <button class="menu-button" data-view="dataView" type="button">데이터관리</button>
         </nav>
         <button id="logoutButton" class="ghost-button" type="button">로그아웃</button>
       </aside>
@@ -49,12 +56,122 @@
         <header class="topbar">
           <div>
             <p class="eyebrow">오늘 업무</p>
-            <h1 id="viewTitle">재고관리</h1>
+            <h1 id="viewTitle">대시보드</h1>
           </div>
-          <div class="status-chip" id="todayStamp"></div>
+          <div class="topbar-actions">
+            <button id="favoriteButton" class="icon-action" type="button" title="현재 메뉴 즐겨찾기">☆</button>
+            <button id="darkModeButton" class="icon-action" type="button" title="다크모드">◐</button>
+            <div class="status-chip" id="todayStamp"></div>
+          </div>
         </header>
 
-        <section id="inventoryView" class="view active-view">
+        <section id="dashboardView" class="view active-view">
+          <div class="section-head">
+            <div>
+              <h2>업무 대시보드</h2>
+              <p>오늘 처리할 일, 발주, 재고, 공장 업무를 한눈에 확인합니다.</p>
+            </div>
+            <button id="printViewButton" class="secondary-button" type="button">현재 화면 인쇄</button>
+          </div>
+          <div class="dashboard-grid">
+            <article class="metric-card"><span>할 일 진행률</span><strong id="dashboardTodoProgress">0%</strong></article>
+            <article class="metric-card"><span>대기 발주</span><strong id="dashboardPendingOrders">0건</strong></article>
+            <article class="metric-card"><span>재고 부족</span><strong id="dashboardLowStock">0건</strong></article>
+            <article class="metric-card"><span>공장 미완료</span><strong id="dashboardFactoryOpen">0건</strong></article>
+          </div>
+          <div class="tool-grid">
+            <section class="tool-panel">
+              <h3>검색</h3>
+              <input id="globalSearchInput" placeholder="발주, 제품, 메모, 연락처 검색">
+              <div id="globalSearchResults" class="search-results"></div>
+            </section>
+            <section class="tool-panel">
+              <h3>즐겨찾기</h3>
+              <div id="favoriteList" class="quick-list"></div>
+            </section>
+            <section class="tool-panel">
+              <h3>최근 활동</h3>
+              <div id="recentActivityList" class="quick-list"></div>
+            </section>
+          </div>
+        </section>
+
+        <section id="todoView" class="view">
+          <div class="section-head">
+            <div>
+              <h2>할 일 목록</h2>
+              <p>일일/주간 체크리스트, 우선순위, 완료율을 관리합니다.</p>
+            </div>
+            <button id="addTodoButton" class="primary-button" type="button">추가</button>
+          </div>
+          <form id="todoForm" class="entry-grid todo-grid">
+            <input name="title" placeholder="할 일" required>
+            <input name="dueDate" type="date">
+            <select name="priority">
+              <option value="높음">높음</option>
+              <option value="보통" selected>보통</option>
+              <option value="낮음">낮음</option>
+            </select>
+            <select name="period">
+              <option value="일일">일일</option>
+              <option value="주간">주간</option>
+            </select>
+          </form>
+          <div class="progress-wrap"><div id="todoProgressBar"></div></div>
+          <div id="todoList" class="task-list"></div>
+        </section>
+
+        <section id="orderView" class="view">
+          <div class="section-head">
+            <div>
+              <h2>발주관리</h2>
+              <p>거래처별 발주 내역과 상태를 입력하고 월별 현황을 확인합니다.</p>
+            </div>
+            <button id="addOrderButton" class="primary-button" type="button">추가</button>
+          </div>
+          <form id="orderForm" class="entry-grid order-grid">
+            <input name="client" placeholder="거래처" required>
+            <input name="item" placeholder="품목" required>
+            <input name="quantity" type="number" min="0" placeholder="수량" required>
+            <input name="amount" type="number" min="0" step="100" placeholder="금액">
+            <input name="dueDate" type="date">
+            <select name="status">
+              <option value="대기">대기</option>
+              <option value="진행">진행</option>
+              <option value="완료">완료</option>
+            </select>
+          </form>
+          <div id="orderStats" class="inline-stats"></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>거래처</th><th>품목</th><th>수량</th><th>금액</th><th>마감일</th><th>상태</th><th></th></tr></thead>
+              <tbody id="orderRows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="factoryView" class="view">
+          <div class="section-head">
+            <div>
+              <h2>가공공장 업무</h2>
+              <p>생산 일정, 작업 체크리스트, 품질 검사 기록을 관리합니다.</p>
+            </div>
+            <button id="addFactoryButton" class="primary-button" type="button">추가</button>
+          </div>
+          <form id="factoryForm" class="entry-grid factory-grid">
+            <input name="date" type="date" required>
+            <input name="product" placeholder="제품/작업명" required>
+            <input name="process" placeholder="공정">
+            <select name="quality">
+              <option value="확인 전">확인 전</option>
+              <option value="적합">적합</option>
+              <option value="재확인">재확인</option>
+            </select>
+          </form>
+          <div id="factoryList" class="task-list"></div>
+        </section>
+
+        <section id="inventoryView" class="view">
           <div class="section-head">
             <div>
               <h2>재고 현황</h2>
@@ -80,6 +197,46 @@
               </thead>
               <tbody id="inventoryRows"></tbody>
             </table>
+          </div>
+        </section>
+
+        <section id="contactView" class="view">
+          <div class="section-head">
+            <div>
+              <h2>빠른 연락처</h2>
+              <p>주요 거래처 연락처와 특이사항을 저장합니다.</p>
+            </div>
+            <button id="addContactButton" class="primary-button" type="button">추가</button>
+          </div>
+          <form id="contactForm" class="entry-grid contact-grid">
+            <input name="name" placeholder="거래처/담당자" required>
+            <input name="phone" placeholder="전화번호">
+            <input name="email" type="email" placeholder="이메일">
+            <input name="memo" placeholder="특이사항">
+          </form>
+          <div id="contactList" class="contact-list"></div>
+        </section>
+
+        <section id="calculatorView" class="view">
+          <div class="section-head">
+            <div>
+              <h2>계산기</h2>
+              <p>수량/금액 계산과 간단한 환율 계산을 빠르게 처리합니다.</p>
+            </div>
+          </div>
+          <div class="tool-grid">
+            <section class="tool-panel">
+              <h3>수량/금액 계산</h3>
+              <input id="calcQuantity" type="number" min="0" placeholder="수량">
+              <input id="calcUnitPrice" type="number" min="0" placeholder="단가">
+              <strong id="calcTotal" class="calc-result">0원</strong>
+            </section>
+            <section class="tool-panel">
+              <h3>환율 계산</h3>
+              <input id="exchangeAmount" type="number" min="0" placeholder="외화 금액">
+              <input id="exchangeRate" type="number" min="0" placeholder="환율">
+              <strong id="exchangeTotal" class="calc-result">0원</strong>
+            </section>
           </div>
         </section>
 
@@ -259,6 +416,28 @@
             <strong>현장 설명용 핵심 문장</strong>
             <p>“인삼은 원료 이름이고, 수삼은 생인삼, 홍삼은 수삼을 쪄서 말린 가공 인삼입니다.”</p>
             <p class="info-caution">건강 관련 설명은 개인 상태에 따라 달라질 수 있으므로 치료 효과처럼 단정하지 말고, 섭취 중인 약이나 질환이 있는 경우 전문가 상담을 권합니다.</p>
+          </div>
+        </section>
+
+        <section id="dataView" class="view">
+          <div class="section-head">
+            <div>
+              <h2>데이터관리</h2>
+              <p>로컬 저장 데이터를 백업, 복원, 인쇄합니다.</p>
+            </div>
+          </div>
+          <div class="tool-grid">
+            <section class="tool-panel">
+              <h3>백업/복원</h3>
+              <button id="exportDataButton" class="primary-button" type="button">데이터 내보내기</button>
+              <label class="file-action">데이터 가져오기<input id="importDataInput" type="file" accept="application/json"></label>
+              <p id="dataStatus" class="memo-status">브라우저에 저장된 업무 데이터를 JSON 파일로 백업할 수 있습니다.</p>
+            </section>
+            <section class="tool-panel">
+              <h3>보고서/인쇄</h3>
+              <button id="downloadReportButton" class="secondary-button" type="button">월간 보고서 다운로드</button>
+              <button id="printDataButton" class="secondary-button" type="button">현재 화면 인쇄</button>
+            </section>
           </div>
         </section>
       </section>

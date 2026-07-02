@@ -8,8 +8,15 @@
     inventory: "ginsengOfficeInventory",
     schedule: "ginsengOfficeSchedule",
     memos: "ginsengOfficeMemos",
+    todos: "ginsengOfficeTodos",
+    orders: "ginsengOfficeOrders",
+    factoryTasks: "ginsengOfficeFactoryTasks",
+    contacts: "ginsengOfficeContacts",
     prices: "ginsengOfficePrices",
-    market: "ginsengOfficeMarket"
+    market: "ginsengOfficeMarket",
+    favorites: "ginsengOfficeFavorites",
+    recent: "ginsengOfficeRecent",
+    theme: "ginsengOfficeTheme"
   };
 
   const inventoryBranches = [
@@ -43,8 +50,14 @@
     activeInventoryBranch: inventoryBranches[0].id,
     schedule: loadList(storageKeys.schedule, initialSchedule),
     memos: loadObject(storageKeys.memos, {}),
+    todos: loadList(storageKeys.todos, []),
+    orders: loadList(storageKeys.orders, []),
+    factoryTasks: loadList(storageKeys.factoryTasks, []),
+    contacts: loadList(storageKeys.contacts, []),
     prices: loadList(storageKeys.prices, initialPrices),
-    market: loadMarket()
+    market: loadMarket(),
+    favorites: loadList(storageKeys.favorites, []),
+    recent: loadList(storageKeys.recent, [])
   };
 
   const els = {
@@ -58,6 +71,28 @@
     views: Array.from(document.querySelectorAll(".view")),
     viewTitle: document.getElementById("viewTitle"),
     todayStamp: document.getElementById("todayStamp"),
+    favoriteButton: document.getElementById("favoriteButton"),
+    darkModeButton: document.getElementById("darkModeButton"),
+    printViewButton: document.getElementById("printViewButton"),
+    dashboardTodoProgress: document.getElementById("dashboardTodoProgress"),
+    dashboardPendingOrders: document.getElementById("dashboardPendingOrders"),
+    dashboardLowStock: document.getElementById("dashboardLowStock"),
+    dashboardFactoryOpen: document.getElementById("dashboardFactoryOpen"),
+    globalSearchInput: document.getElementById("globalSearchInput"),
+    globalSearchResults: document.getElementById("globalSearchResults"),
+    favoriteList: document.getElementById("favoriteList"),
+    recentActivityList: document.getElementById("recentActivityList"),
+    todoForm: document.getElementById("todoForm"),
+    addTodoButton: document.getElementById("addTodoButton"),
+    todoList: document.getElementById("todoList"),
+    todoProgressBar: document.getElementById("todoProgressBar"),
+    orderForm: document.getElementById("orderForm"),
+    addOrderButton: document.getElementById("addOrderButton"),
+    orderStats: document.getElementById("orderStats"),
+    orderRows: document.getElementById("orderRows"),
+    factoryForm: document.getElementById("factoryForm"),
+    addFactoryButton: document.getElementById("addFactoryButton"),
+    factoryList: document.getElementById("factoryList"),
     inventoryBranchTabs: document.getElementById("inventoryBranchTabs"),
     activeInventoryBranchName: document.getElementById("activeInventoryBranchName"),
     inventoryForm: document.getElementById("inventoryForm"),
@@ -80,12 +115,27 @@
     marketRows: document.getElementById("marketRows"),
     marketMessage: document.getElementById("marketMessage"),
     marketUpdatedAt: document.getElementById("marketUpdatedAt"),
-    nextRefreshAt: document.getElementById("nextRefreshAt")
+    nextRefreshAt: document.getElementById("nextRefreshAt"),
+    contactForm: document.getElementById("contactForm"),
+    addContactButton: document.getElementById("addContactButton"),
+    contactList: document.getElementById("contactList"),
+    calcQuantity: document.getElementById("calcQuantity"),
+    calcUnitPrice: document.getElementById("calcUnitPrice"),
+    calcTotal: document.getElementById("calcTotal"),
+    exchangeAmount: document.getElementById("exchangeAmount"),
+    exchangeRate: document.getElementById("exchangeRate"),
+    exchangeTotal: document.getElementById("exchangeTotal"),
+    exportDataButton: document.getElementById("exportDataButton"),
+    importDataInput: document.getElementById("importDataInput"),
+    downloadReportButton: document.getElementById("downloadReportButton"),
+    printDataButton: document.getElementById("printDataButton"),
+    dataStatus: document.getElementById("dataStatus")
   };
 
   boot();
 
   function boot() {
+    applySavedTheme();
     startLiveClock();
     bindEvents();
     renderAll();
@@ -131,6 +181,29 @@
       });
     });
 
+    els.favoriteButton.addEventListener("click", toggleCurrentFavorite);
+    els.darkModeButton.addEventListener("click", toggleDarkMode);
+    els.printViewButton.addEventListener("click", printCurrentView);
+    els.globalSearchInput.addEventListener("input", renderSearchResults);
+
+    els.addTodoButton.addEventListener("click", addTodoFromForm);
+    els.todoForm.addEventListener("submit", function (event) {
+      event.preventDefault();
+      addTodoFromForm();
+    });
+
+    els.addOrderButton.addEventListener("click", addOrderFromForm);
+    els.orderForm.addEventListener("submit", function (event) {
+      event.preventDefault();
+      addOrderFromForm();
+    });
+
+    els.addFactoryButton.addEventListener("click", addFactoryFromForm);
+    els.factoryForm.addEventListener("submit", function (event) {
+      event.preventDefault();
+      addFactoryFromForm();
+    });
+
     renderInventoryBranchTabs();
 
     els.addInventoryButton.addEventListener("click", function () {
@@ -166,6 +239,22 @@
     els.refreshMarketButton.addEventListener("click", function () {
       refreshMarket(true);
     });
+
+    els.addContactButton.addEventListener("click", addContactFromForm);
+    els.contactForm.addEventListener("submit", function (event) {
+      event.preventDefault();
+      addContactFromForm();
+    });
+    [els.calcQuantity, els.calcUnitPrice].forEach(function (input) {
+      input.addEventListener("input", updateCalculators);
+    });
+    [els.exchangeAmount, els.exchangeRate].forEach(function (input) {
+      input.addEventListener("input", updateCalculators);
+    });
+    els.exportDataButton.addEventListener("click", exportData);
+    els.importDataInput.addEventListener("change", importData);
+    els.downloadReportButton.addEventListener("click", downloadMonthlyReport);
+    els.printDataButton.addEventListener("click", printCurrentView);
   }
 
   function showWorkspace() {
@@ -182,17 +271,26 @@
       view.classList.toggle("active-view", view.id === viewId);
     });
     els.viewTitle.textContent = title;
+    recordActivity(title + " 메뉴 열람");
+    updateFavoriteButton(viewId);
+    renderDashboard();
     if (viewId === "marketView") {
       maybeAutoRefreshMarket();
     }
   }
 
   function renderAll() {
+    renderTodos();
+    renderOrders();
+    renderFactoryTasks();
     renderInventory();
     renderSchedule();
     renderMemos();
     renderPrices();
     renderMarket();
+    renderContacts();
+    updateCalculators();
+    renderDashboard();
   }
 
   function addFromForm(form, list, key, render) {
@@ -204,6 +302,138 @@
     saveList(key, list);
     form.reset();
     render();
+  }
+
+  function addTodoFromForm() {
+    if (!els.todoForm.reportValidity()) return;
+    const data = Object.fromEntries(new FormData(els.todoForm).entries());
+    state.todos.push(Object.assign(data, { done: false, createdAt: new Date().toISOString() }));
+    saveList(storageKeys.todos, state.todos);
+    els.todoForm.reset();
+    recordActivity("할 일 추가: " + data.title);
+    renderTodos();
+  }
+
+  function renderTodos() {
+    els.todoList.innerHTML = "";
+    const doneCount = state.todos.filter(function (todo) { return todo.done; }).length;
+    const progress = state.todos.length ? Math.round((doneCount / state.todos.length) * 100) : 0;
+    els.todoProgressBar.style.width = progress + "%";
+    els.todoProgressBar.textContent = progress + "%";
+    if (!state.todos.length) {
+      els.todoList.appendChild(emptyNotice("등록된 할 일이 없습니다."));
+      renderDashboard();
+      return;
+    }
+    state.todos.forEach(function (todo, index) {
+      const item = document.createElement("article");
+      item.className = "task-item" + (todo.done ? " completed" : "");
+      item.innerHTML = '<label><input type="checkbox"><span></span></label><div class="task-meta"></div><div></div>';
+      item.querySelector("input").checked = todo.done;
+      item.querySelector("input").addEventListener("change", function (event) {
+        todo.done = event.target.checked;
+        saveList(storageKeys.todos, state.todos);
+        recordActivity((todo.done ? "완료: " : "미완료: ") + todo.title);
+        renderTodos();
+      });
+      item.querySelector("span").textContent = todo.title;
+      item.querySelector(".task-meta").textContent = [todo.period, todo.priority, todo.dueDate].filter(Boolean).join(" · ");
+      item.lastElementChild.appendChild(deleteButton(function () {
+        state.todos.splice(index, 1);
+        saveList(storageKeys.todos, state.todos);
+        renderTodos();
+      }));
+      els.todoList.appendChild(item);
+    });
+    renderDashboard();
+  }
+
+  function addOrderFromForm() {
+    if (!els.orderForm.reportValidity()) return;
+    const data = Object.fromEntries(new FormData(els.orderForm).entries());
+    data.quantity = Number(data.quantity);
+    data.amount = Number(data.amount || 0);
+    data.createdAt = new Date().toISOString();
+    state.orders.push(data);
+    saveList(storageKeys.orders, state.orders);
+    els.orderForm.reset();
+    recordActivity("발주 추가: " + data.client + " / " + data.item);
+    renderOrders();
+  }
+
+  function renderOrders() {
+    els.orderRows.innerHTML = "";
+    const currentMonth = localISODate(new Date()).slice(0, 7);
+    const monthOrders = state.orders.filter(function (order) {
+      return (order.createdAt || "").slice(0, 7) === currentMonth;
+    });
+    const monthAmount = monthOrders.reduce(function (sum, order) { return sum + Number(order.amount || 0); }, 0);
+    els.orderStats.textContent = "이번 달 발주 " + monthOrders.length + "건 · 합계 " + formatWon(monthAmount);
+    if (!state.orders.length) {
+      els.orderRows.appendChild(emptyRow(7, "등록된 발주가 없습니다."));
+      renderDashboard();
+      return;
+    }
+    state.orders.forEach(function (order, index) {
+      const tr = document.createElement("tr");
+      tr.innerHTML = "<td></td><td></td><td></td><td></td><td></td><td></td><td></td>";
+      tr.children[0].textContent = order.client;
+      tr.children[1].textContent = order.item;
+      tr.children[2].textContent = Number(order.quantity || 0).toLocaleString("ko-KR");
+      tr.children[3].textContent = formatWon(order.amount);
+      tr.children[4].textContent = order.dueDate || "-";
+      tr.children[5].appendChild(statusSelect(order.status, ["대기", "진행", "완료"], function (value) {
+        order.status = value;
+        saveList(storageKeys.orders, state.orders);
+        renderOrders();
+      }));
+      tr.children[6].appendChild(deleteButton(function () {
+        state.orders.splice(index, 1);
+        saveList(storageKeys.orders, state.orders);
+        renderOrders();
+      }));
+      els.orderRows.appendChild(tr);
+    });
+    renderDashboard();
+  }
+
+  function addFactoryFromForm() {
+    if (!els.factoryForm.reportValidity()) return;
+    const data = Object.fromEntries(new FormData(els.factoryForm).entries());
+    state.factoryTasks.push(Object.assign(data, { done: false, createdAt: new Date().toISOString() }));
+    saveList(storageKeys.factoryTasks, state.factoryTasks);
+    els.factoryForm.reset();
+    recordActivity("공장 업무 추가: " + data.product);
+    renderFactoryTasks();
+  }
+
+  function renderFactoryTasks() {
+    els.factoryList.innerHTML = "";
+    if (!state.factoryTasks.length) {
+      els.factoryList.appendChild(emptyNotice("등록된 공장 업무가 없습니다."));
+      renderDashboard();
+      return;
+    }
+    state.factoryTasks.forEach(function (task, index) {
+      const item = document.createElement("article");
+      item.className = "task-item" + (task.done ? " completed" : "");
+      item.innerHTML = '<label><input type="checkbox"><span></span></label><div class="task-meta"></div><div></div>';
+      item.querySelector("input").checked = task.done;
+      item.querySelector("input").addEventListener("change", function (event) {
+        task.done = event.target.checked;
+        saveList(storageKeys.factoryTasks, state.factoryTasks);
+        renderFactoryTasks();
+      });
+      item.querySelector("span").textContent = task.product;
+      item.querySelector(".task-meta").textContent = [task.date, task.process, task.quality].filter(Boolean).join(" · ");
+      item.lastElementChild.appendChild(deleteButton(function () {
+        state.factoryTasks.splice(index, 1);
+        saveList(storageKeys.factoryTasks, state.factoryTasks);
+        renderFactoryTasks();
+      }));
+      els.factoryList.appendChild(item);
+    });
+    renderDashboard();
   }
 
   function addInventoryFromForm() {
@@ -479,6 +709,95 @@
     els.marketMessage.textContent = state.market.message || "시세표 화면을 열면 오늘 오전 8시 이후 갱신 여부를 확인합니다.";
   }
 
+  function addContactFromForm() {
+    if (!els.contactForm.reportValidity()) return;
+    const data = Object.fromEntries(new FormData(els.contactForm).entries());
+    state.contacts.push(data);
+    saveList(storageKeys.contacts, state.contacts);
+    els.contactForm.reset();
+    recordActivity("연락처 추가: " + data.name);
+    renderContacts();
+  }
+
+  function renderContacts() {
+    els.contactList.innerHTML = "";
+    if (!state.contacts.length) {
+      els.contactList.appendChild(emptyNotice("등록된 연락처가 없습니다."));
+      return;
+    }
+    state.contacts.forEach(function (contact, index) {
+      const card = document.createElement("article");
+      card.className = "contact-card";
+      card.innerHTML = "<strong></strong><p></p><div></div><div></div>";
+      card.querySelector("strong").textContent = contact.name;
+      card.querySelector("p").textContent = contact.memo || "특이사항 없음";
+      const links = card.children[2];
+      if (contact.phone) links.appendChild(contactLink("전화", "tel:" + contact.phone));
+      if (contact.email) links.appendChild(contactLink("이메일", "mailto:" + contact.email));
+      card.lastElementChild.appendChild(deleteButton(function () {
+        state.contacts.splice(index, 1);
+        saveList(storageKeys.contacts, state.contacts);
+        renderContacts();
+      }));
+      els.contactList.appendChild(card);
+    });
+  }
+
+  function updateCalculators() {
+    const total = Number(els.calcQuantity.value || 0) * Number(els.calcUnitPrice.value || 0);
+    const exchange = Number(els.exchangeAmount.value || 0) * Number(els.exchangeRate.value || 0);
+    els.calcTotal.textContent = formatWon(total);
+    els.exchangeTotal.textContent = formatWon(exchange);
+  }
+
+  function renderDashboard() {
+    const doneTodos = state.todos.filter(function (todo) { return todo.done; }).length;
+    const todoProgress = state.todos.length ? Math.round((doneTodos / state.todos.length) * 100) : 0;
+    const pendingOrders = state.orders.filter(function (order) { return order.status !== "완료"; }).length;
+    const lowStock = inventoryBranches.reduce(function (count, branch) {
+      return count + (state.inventory[branch.id] || []).filter(function (row) { return Number(row.quantity || 0) <= 5; }).length;
+    }, 0);
+    const openFactory = state.factoryTasks.filter(function (task) { return !task.done; }).length;
+    els.dashboardTodoProgress.textContent = todoProgress + "%";
+    els.dashboardPendingOrders.textContent = pendingOrders + "건";
+    els.dashboardLowStock.textContent = lowStock + "건";
+    els.dashboardFactoryOpen.textContent = openFactory + "건";
+    renderQuickList(els.favoriteList, state.favorites, "즐겨찾기 메뉴가 없습니다.", function (viewId) {
+      const button = els.menuButtons.find(function (menuButton) { return menuButton.dataset.view === viewId; });
+      if (button) button.click();
+    });
+    renderQuickList(els.recentActivityList, state.recent, "최근 활동이 없습니다.");
+    renderSearchResults();
+  }
+
+  function renderSearchResults() {
+    const keyword = els.globalSearchInput.value.trim().toLowerCase();
+    els.globalSearchResults.innerHTML = "";
+    if (!keyword) {
+      els.globalSearchResults.appendChild(emptyNotice("검색어를 입력하면 발주, 제품, 메모, 연락처를 찾습니다."));
+      return;
+    }
+    const results = [];
+    state.orders.forEach(function (order) { pushSearchResult(results, "발주", order.client + " " + order.item + " " + order.status, keyword); });
+    Object.keys(state.memos).forEach(function (date) { pushSearchResult(results, "메모 " + date, state.memos[date].text, keyword); });
+    state.contacts.forEach(function (contact) { pushSearchResult(results, "연락처", contact.name + " " + contact.phone + " " + contact.memo, keyword); });
+    inventoryBranches.forEach(function (branch) {
+      (state.inventory[branch.id] || []).forEach(function (row) { pushSearchResult(results, branch.name, row.item + " " + row.grade + " " + row.location, keyword); });
+    });
+    if (!results.length) {
+      els.globalSearchResults.appendChild(emptyNotice("검색 결과가 없습니다."));
+      return;
+    }
+    results.slice(0, 8).forEach(function (result) {
+      const item = document.createElement("div");
+      item.className = "search-result";
+      item.innerHTML = "<strong></strong><span></span>";
+      item.querySelector("strong").textContent = result.title;
+      item.querySelector("span").textContent = result.text;
+      els.globalSearchResults.appendChild(item);
+    });
+  }
+
   function maybeAutoRefreshMarket() {
     if (shouldRefreshMarket()) {
       refreshMarket(false);
@@ -547,6 +866,35 @@
     button.textContent = "삭제";
     button.addEventListener("click", onClick);
     return button;
+  }
+
+  function statusSelect(current, options, onChange) {
+    const select = document.createElement("select");
+    options.forEach(function (option) {
+      const element = document.createElement("option");
+      element.value = option;
+      element.textContent = option;
+      select.appendChild(element);
+    });
+    select.value = current || options[0];
+    select.addEventListener("change", function () {
+      onChange(select.value);
+    });
+    return select;
+  }
+
+  function emptyNotice(text) {
+    const item = document.createElement("div");
+    item.className = "empty-state memo-empty";
+    item.textContent = text;
+    return item;
+  }
+
+  function contactLink(label, href) {
+    const link = document.createElement("a");
+    link.href = href;
+    link.textContent = label;
+    return link;
   }
 
   function emptyRow(colspan, text) {
@@ -618,6 +966,121 @@
 
   function saveObject(key, value) {
     localStorage.setItem(key, JSON.stringify(value));
+  }
+
+  function toggleCurrentFavorite() {
+    const activeView = document.querySelector(".active-view");
+    if (!activeView) return;
+    const viewId = activeView.id;
+    if (state.favorites.includes(viewId)) {
+      state.favorites = state.favorites.filter(function (favorite) { return favorite !== viewId; });
+    } else {
+      state.favorites.push(viewId);
+    }
+    saveList(storageKeys.favorites, state.favorites);
+    updateFavoriteButton(viewId);
+    renderDashboard();
+  }
+
+  function updateFavoriteButton(viewId) {
+    els.favoriteButton.textContent = state.favorites.includes(viewId) ? "★" : "☆";
+  }
+
+  function toggleDarkMode() {
+    document.body.classList.toggle("dark-mode");
+    localStorage.setItem(storageKeys.theme, document.body.classList.contains("dark-mode") ? "dark" : "light");
+  }
+
+  function applySavedTheme() {
+    document.body.classList.toggle("dark-mode", localStorage.getItem(storageKeys.theme) === "dark");
+  }
+
+  function recordActivity(text) {
+    state.recent.unshift(formatDateTime(new Date()) + " · " + text);
+    state.recent = state.recent.slice(0, 8);
+    saveList(storageKeys.recent, state.recent);
+  }
+
+  function renderQuickList(container, list, emptyText, onClick) {
+    container.innerHTML = "";
+    if (!list.length) {
+      container.appendChild(emptyNotice(emptyText));
+      return;
+    }
+    list.forEach(function (item) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "quick-item";
+      button.textContent = viewLabel(item) || item;
+      if (onClick) button.addEventListener("click", function () { onClick(item); });
+      container.appendChild(button);
+    });
+  }
+
+  function viewLabel(viewId) {
+    const button = els.menuButtons.find(function (menuButton) { return menuButton.dataset.view === viewId; });
+    return button ? button.textContent : "";
+  }
+
+  function pushSearchResult(results, title, text, keyword) {
+    const value = String(text || "");
+    if (value.toLowerCase().includes(keyword)) {
+      results.push({ title: title, text: previewText(value) });
+    }
+  }
+
+  function printCurrentView() {
+    window.print();
+  }
+
+  function exportData() {
+    const data = {};
+    Object.keys(storageKeys).forEach(function (name) {
+      if (name !== "authed") data[name] = localStorage.getItem(storageKeys[name]);
+    });
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    downloadBlob(blob, "ganghwa-office-backup-" + todayISO() + ".json");
+    els.dataStatus.textContent = "백업 파일을 내보냈습니다.";
+  }
+
+  function importData(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.addEventListener("load", function () {
+      try {
+        const data = JSON.parse(reader.result);
+        Object.keys(data).forEach(function (name) {
+          if (storageKeys[name] && data[name] !== null) localStorage.setItem(storageKeys[name], data[name]);
+        });
+        els.dataStatus.textContent = "가져오기가 완료되었습니다. 새로고침하면 반영됩니다.";
+      } catch (error) {
+        els.dataStatus.textContent = "가져오기 파일을 확인해 주세요.";
+      }
+    });
+    reader.readAsText(file);
+  }
+
+  function downloadMonthlyReport() {
+    const lines = [
+      "강화인삼농협 월간 업무 보고서",
+      "작성일," + formatDateTime(new Date()),
+      "할 일," + state.todos.length + "건",
+      "발주," + state.orders.length + "건",
+      "공장 업무," + state.factoryTasks.length + "건",
+      "연락처," + state.contacts.length + "건"
+    ];
+    const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
+    downloadBlob(blob, "monthly-report-" + todayISO() + ".csv");
+  }
+
+  function downloadBlob(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    link.click();
+    URL.revokeObjectURL(url);
   }
 
   function appendMemoText(text) {
