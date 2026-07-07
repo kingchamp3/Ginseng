@@ -1,7 +1,7 @@
 {
   "sourceUrl": "https://insamtong.kr/",
   "reportUrl": "https://insamtong.kr/priceReport.do",
-  "updatedAt": "2026-07-07T04:14:02.317Z",
+  "updatedAt": "2026-07-07T09:58:55.881Z",
   "date": "2026-07-01",
   "unit": "750g(1채)",
   "grades": [
@@ -53,9 +53,9 @@
       "previousDayPct": 0,
       "previousMonthPct": 3.01,
       "previousYearPct": 28.81,
-      "qtyTon": null,
-      "qtyMonthPct": null,
-      "qtyYearPct": null,
+      "qtyTon": 917,
+      "qtyMonthPct": 81.58,
+      "qtyYearPct": 28.97,
       "records": [
         {
           "date": "2026-07-01",
@@ -69,9 +69,9 @@
           "previousMonthPct": 3.01,
           "previousYearPrice": 64047.61904762,
           "previousYearPct": 28.81,
-          "qtyTon": null,
-          "qtyMonthPct": null,
-          "qtyYearPct": null
+          "qtyTon": 917,
+          "qtyMonthPct": 81.58,
+          "qtyYearPct": 28.97
         },
         {
           "date": "2026-06-26",
@@ -443,9 +443,9 @@
       "previousDayPct": 0,
       "previousMonthPct": 1.66,
       "previousYearPct": 27.76,
-      "qtyTon": null,
-      "qtyMonthPct": null,
-      "qtyYearPct": null,
+      "qtyTon": 917,
+      "qtyMonthPct": 81.58,
+      "qtyYearPct": 28.97,
       "records": [
         {
           "date": "2026-07-01",
@@ -459,9 +459,9 @@
           "previousMonthPct": 1.66,
           "previousYearPrice": 56745.28301887,
           "previousYearPct": 27.76,
-          "qtyTon": null,
-          "qtyMonthPct": null,
-          "qtyYearPct": null
+          "qtyTon": 917,
+          "qtyMonthPct": 81.58,
+          "qtyYearPct": 28.97
         },
         {
           "date": "2026-06-26",
@@ -833,9 +833,9 @@
       "previousDayPct": 0,
       "previousMonthPct": 1.97,
       "previousYearPct": 36.98,
-      "qtyTon": null,
-      "qtyMonthPct": null,
-      "qtyYearPct": null,
+      "qtyTon": 917,
+      "qtyMonthPct": 81.58,
+      "qtyYearPct": 28.97,
       "records": [
         {
           "date": "2026-07-01",
@@ -849,9 +849,9 @@
           "previousMonthPct": 1.97,
           "previousYearPrice": 45628.07017544,
           "previousYearPct": 36.98,
-          "qtyTon": null,
-          "qtyMonthPct": null,
-          "qtyYearPct": null
+          "qtyTon": 917,
+          "qtyMonthPct": 81.58,
+          "qtyYearPct": 28.97
         },
         {
           "date": "2026-06-26",
@@ -1223,9 +1223,9 @@
       "previousDayPct": 0,
       "previousMonthPct": 1.29,
       "previousYearPct": 42.7,
-      "qtyTon": null,
-      "qtyMonthPct": null,
-      "qtyYearPct": null,
+      "qtyTon": 917,
+      "qtyMonthPct": 81.58,
+      "qtyYearPct": 28.97,
       "records": [
         {
           "date": "2026-07-01",
@@ -1239,9 +1239,9 @@
           "previousMonthPct": 1.29,
           "previousYearPrice": 38542.10526316,
           "previousYearPct": 42.7,
-          "qtyTon": null,
-          "qtyMonthPct": null,
-          "qtyYearPct": null
+          "qtyTon": 917,
+          "qtyMonthPct": 81.58,
+          "qtyYearPct": 28.97
         },
         {
           "date": "2026-06-26",
@@ -1613,9 +1613,9 @@
       "previousDayPct": 0,
       "previousMonthPct": -0.44,
       "previousYearPct": 41.55,
-      "qtyTon": null,
-      "qtyMonthPct": null,
-      "qtyYearPct": null,
+      "qtyTon": 917,
+      "qtyMonthPct": 81.58,
+      "qtyYearPct": 28.97,
       "records": [
         {
           "date": "2026-07-01",
@@ -1629,9 +1629,9 @@
           "previousMonthPct": -0.44,
           "previousYearPrice": 33557.29824561,
           "previousYearPct": 41.55,
-          "qtyTon": null,
-          "qtyMonthPct": null,
-          "qtyYearPct": null
+          "qtyTon": 917,
+          "qtyMonthPct": 81.58,
+          "qtyYearPct": 28.97
         },
         {
           "date": "2026-06-26",
@@ -2003,9 +2003,9 @@
       "previousDayPct": -0.38,
       "previousMonthPct": -1.14,
       "previousYearPct": 44.24,
-      "qtyTon": null,
-      "qtyMonthPct": null,
-      "qtyYearPct": null,
+      "qtyTon": 917,
+      "qtyMonthPct": 81.58,
+      "qtyYearPct": 28.97,
       "records": [
         {
           "date": "2026-07-01",
@@ -2019,9 +2019,9 @@
           "previousMonthPct": -1.14,
           "previousYearPrice": 30043.28070175,
           "previousYearPct": 44.24,
-          "qtyTon": null,
-          "qtyMonthPct": null,
-          "qtyYearPct": null
+          "qtyTon": 917,
+          "qtyMonthPct": 81.58,
+          "qtyYearPct": 28.97
         },
         {
           "date": "2026-06-26",
@@ -2393,9 +2393,9 @@
       "previousDayPct": 0.81,
       "previousMonthPct": -0.17,
       "previousYearPct": 52.12,
-      "qtyTon": null,
-      "qtyMonthPct": null,
-      "qtyYearPct": null,
+      "qtyTon": 917,
+      "qtyMonthPct": 81.58,
+      "qtyYearPct": 28.97,
       "records": [
         {
           "date": "2026-07-01",
@@ -2409,9 +2409,9 @@
           "previousMonthPct": -0.17,
           "previousYearPrice": 27170.78947368,
           "previousYearPct": 52.12,
-          "qtyTon": null,
-          "qtyMonthPct": null,
-          "qtyYearPct": null
+          "qtyTon": 917,
+          "qtyMonthPct": 81.58,
+          "qtyYearPct": 28.97
         },
         {
           "date": "2026-06-26",
@@ -2783,9 +2783,9 @@
       "previousDayPct": 0.86,
       "previousMonthPct": -1.74,
       "previousYearPct": 57.96,
-      "qtyTon": null,
-      "qtyMonthPct": null,
-      "qtyYearPct": null,
+      "qtyTon": 917,
+      "qtyMonthPct": 81.58,
+      "qtyYearPct": 28.97,
       "records": [
         {
           "date": "2026-07-01",
@@ -2799,9 +2799,9 @@
           "previousMonthPct": -1.74,
           "previousYearPrice": 24584.21052632,
           "previousYearPct": 57.96,
-          "qtyTon": null,
-          "qtyMonthPct": null,
-          "qtyYearPct": null
+          "qtyTon": 917,
+          "qtyMonthPct": 81.58,
+          "qtyYearPct": 28.97
         },
         {
           "date": "2026-06-26",
@@ -3173,9 +3173,9 @@
       "previousDayPct": 0.41,
       "previousMonthPct": -0.5,
       "previousYearPct": 51.23,
-      "qtyTon": null,
-      "qtyMonthPct": null,
-      "qtyYearPct": null,
+      "qtyTon": 917,
+      "qtyMonthPct": 81.58,
+      "qtyYearPct": 28.97,
       "records": [
         {
           "date": "2026-07-01",
@@ -3189,9 +3189,9 @@
           "previousMonthPct": -0.5,
           "previousYearPrice": 27221.15384615,
           "previousYearPct": 51.23,
-          "qtyTon": null,
-          "qtyMonthPct": null,
-          "qtyYearPct": null
+          "qtyTon": 917,
+          "qtyMonthPct": 81.58,
+          "qtyYearPct": 28.97
         },
         {
           "date": "2026-06-26",
@@ -3563,9 +3563,9 @@
       "previousDayPct": -0.43,
       "previousMonthPct": -1.58,
       "previousYearPct": 54.43,
-      "qtyTon": null,
-      "qtyMonthPct": null,
-      "qtyYearPct": null,
+      "qtyTon": 917,
+      "qtyMonthPct": 81.58,
+      "qtyYearPct": 28.97,
       "records": [
         {
           "date": "2026-07-01",
@@ -3579,9 +3579,9 @@
           "previousMonthPct": -1.58,
           "previousYearPrice": 25145.31578947,
           "previousYearPct": 54.43,
-          "qtyTon": null,
-          "qtyMonthPct": null,
-          "qtyYearPct": null
+          "qtyTon": 917,
+          "qtyMonthPct": 81.58,
+          "qtyYearPct": 28.97
         },
         {
           "date": "2026-06-26",
@@ -3953,9 +3953,9 @@
       "previousDayPct": -0.45,
       "previousMonthPct": -2.32,
       "previousYearPct": 58.14,
-      "qtyTon": null,
-      "qtyMonthPct": null,
-      "qtyYearPct": null,
+      "qtyTon": 917,
+      "qtyMonthPct": 81.58,
+      "qtyYearPct": 28.97,
       "records": [
         {
           "date": "2026-07-01",
@@ -3969,9 +3969,9 @@
           "previousMonthPct": -2.32,
           "previousYearPrice": 23292.12280702,
           "previousYearPct": 58.14,
-          "qtyTon": null,
-          "qtyMonthPct": null,
-          "qtyYearPct": null
+          "qtyTon": 917,
+          "qtyMonthPct": 81.58,
+          "qtyYearPct": 28.97
         },
         {
           "date": "2026-06-26",
@@ -4343,9 +4343,9 @@
       "previousDayPct": -3.24,
       "previousMonthPct": -4.59,
       "previousYearPct": 60.27,
-      "qtyTon": null,
-      "qtyMonthPct": null,
-      "qtyYearPct": null,
+      "qtyTon": 917,
+      "qtyMonthPct": 81.58,
+      "qtyYearPct": 28.97,
       "records": [
         {
           "date": "2026-07-01",
@@ -4359,9 +4359,9 @@
           "previousMonthPct": -4.59,
           "previousYearPrice": 21734.22807018,
           "previousYearPct": 60.27,
-          "qtyTon": null,
-          "qtyMonthPct": null,
-          "qtyYearPct": null
+          "qtyTon": 917,
+          "qtyMonthPct": 81.58,
+          "qtyYearPct": 28.97
         },
         {
           "date": "2026-06-26",
@@ -4733,9 +4733,9 @@
       "previousDayPct": -2.94,
       "previousMonthPct": -6.63,
       "previousYearPct": 63.14,
-      "qtyTon": null,
-      "qtyMonthPct": null,
-      "qtyYearPct": null,
+      "qtyTon": 917,
+      "qtyMonthPct": 81.58,
+      "qtyYearPct": 28.97,
       "records": [
         {
           "date": "2026-07-01",
@@ -4749,9 +4749,9 @@
           "previousMonthPct": -6.63,
           "previousYearPrice": 20227.45614035,
           "previousYearPct": 63.14,
-          "qtyTon": null,
-          "qtyMonthPct": null,
-          "qtyYearPct": null
+          "qtyTon": 917,
+          "qtyMonthPct": 81.58,
+          "qtyYearPct": 28.97
         },
         {
           "date": "2026-06-26",
@@ -5123,9 +5123,9 @@
       "previousDayPct": -2.29,
       "previousMonthPct": -5.94,
       "previousYearPct": 69.94,
-      "qtyTon": null,
-      "qtyMonthPct": null,
-      "qtyYearPct": null,
+      "qtyTon": 917,
+      "qtyMonthPct": 81.58,
+      "qtyYearPct": 28.97,
       "records": [
         {
           "date": "2026-07-01",
@@ -5139,9 +5139,9 @@
           "previousMonthPct": -5.94,
           "previousYearPrice": 18829.80701754,
           "previousYearPct": 69.94,
-          "qtyTon": null,
-          "qtyMonthPct": null,
-          "qtyYearPct": null
+          "qtyTon": 917,
+          "qtyMonthPct": 81.58,
+          "qtyYearPct": 28.97
         },
         {
           "date": "2026-06-26",
@@ -5513,9 +5513,9 @@
       "previousDayPct": -2.1,
       "previousMonthPct": -5.6,
       "previousYearPct": 76.46,
-      "qtyTon": null,
-      "qtyMonthPct": null,
-      "qtyYearPct": null,
+      "qtyTon": 917,
+      "qtyMonthPct": 81.58,
+      "qtyYearPct": 28.97,
       "records": [
         {
           "date": "2026-07-01",
@@ -5529,9 +5529,9 @@
           "previousMonthPct": -5.6,
           "previousYearPrice": 17614.92982456,
           "previousYearPct": 76.46,
-          "qtyTon": null,
-          "qtyMonthPct": null,
-          "qtyYearPct": null
+          "qtyTon": 917,
+          "qtyMonthPct": 81.58,
+          "qtyYearPct": 28.97
         },
         {
           "date": "2026-06-26",
@@ -5903,9 +5903,9 @@
       "previousDayPct": -3.23,
       "previousMonthPct": -5.26,
       "previousYearPct": 88.37,
-      "qtyTon": null,
-      "qtyMonthPct": null,
-      "qtyYearPct": null,
+      "qtyTon": 917,
+      "qtyMonthPct": 81.58,
+      "qtyYearPct": 28.97,
       "records": [
         {
           "date": "2026-07-01",
@@ -5919,9 +5919,9 @@
           "previousMonthPct": -5.26,
           "previousYearPrice": 15925.77358491,
           "previousYearPct": 88.37,
-          "qtyTon": null,
-          "qtyMonthPct": null,
-          "qtyYearPct": null
+          "qtyTon": 917,
+          "qtyMonthPct": 81.58,
+          "qtyYearPct": 28.97
         },
         {
           "date": "2026-06-26",
@@ -6293,9 +6293,9 @@
       "previousDayPct": 0.22,
       "previousMonthPct": -3.01,
       "previousYearPct": 72.11,
-      "qtyTon": null,
-      "qtyMonthPct": null,
-      "qtyYearPct": null,
+      "qtyTon": 917,
+      "qtyMonthPct": 81.58,
+      "qtyYearPct": 28.97,
       "records": [
         {
           "date": "2026-07-01",
@@ -6309,9 +6309,9 @@
           "previousMonthPct": -3.01,
           "previousYearPrice": 21690.92982456,
           "previousYearPct": 72.11,
-          "qtyTon": null,
-          "qtyMonthPct": null,
-          "qtyYearPct": null
+          "qtyTon": 917,
+          "qtyMonthPct": 81.58,
+          "qtyYearPct": 28.97
         },
         {
           "date": "2026-06-26",
@@ -6683,9 +6683,9 @@
       "previousDayPct": -5.25,
       "previousMonthPct": -10.79,
       "previousYearPct": 7.52,
-      "qtyTon": null,
-      "qtyMonthPct": null,
-      "qtyYearPct": null,
+      "qtyTon": 917,
+      "qtyMonthPct": 81.58,
+      "qtyYearPct": 28.97,
       "records": [
         {
           "date": "2026-07-01",
@@ -6699,9 +6699,9 @@
           "previousMonthPct": -10.79,
           "previousYearPrice": 42628.07017544,
           "previousYearPct": 7.52,
-          "qtyTon": null,
-          "qtyMonthPct": null,
-          "qtyYearPct": null
+          "qtyTon": 917,
+          "qtyMonthPct": 81.58,
+          "qtyYearPct": 28.97
         },
         {
           "date": "2026-06-26",
@@ -7073,9 +7073,9 @@
       "previousDayPct": -2.92,
       "previousMonthPct": -7.83,
       "previousYearPct": 16.76,
-      "qtyTon": null,
-      "qtyMonthPct": null,
-      "qtyYearPct": null,
+      "qtyTon": 917,
+      "qtyMonthPct": 81.58,
+      "qtyYearPct": 28.97,
       "records": [
         {
           "date": "2026-07-01",
@@ -7089,9 +7089,9 @@
           "previousMonthPct": -7.83,
           "previousYearPrice": 35542.10526316,
           "previousYearPct": 16.76,
-          "qtyTon": null,
-          "qtyMonthPct": null,
-          "qtyYearPct": null
+          "qtyTon": 917,
+          "qtyMonthPct": 81.58,
+          "qtyYearPct": 28.97
         },
         {
           "date": "2026-06-26",
@@ -7463,9 +7463,9 @@
       "previousDayPct": -3.95,
       "previousMonthPct": -7.87,
       "previousYearPct": 19.45,
-      "qtyTon": null,
-      "qtyMonthPct": null,
-      "qtyYearPct": null,
+      "qtyTon": 917,
+      "qtyMonthPct": 81.58,
+      "qtyYearPct": 28.97,
       "records": [
         {
           "date": "2026-07-01",
@@ -7479,9 +7479,9 @@
           "previousMonthPct": -7.87,
           "previousYearPrice": 30557.29824561,
           "previousYearPct": 19.45,
-          "qtyTon": null,
-          "qtyMonthPct": null,
-          "qtyYearPct": null
+          "qtyTon": 917,
+          "qtyMonthPct": 81.58,
+          "qtyYearPct": 28.97
         },
         {
           "date": "2026-06-26",
@@ -7853,9 +7853,9 @@
       "previousDayPct": -4.29,
       "previousMonthPct": -6.15,
       "previousYearPct": 23.88,
-      "qtyTon": null,
-      "qtyMonthPct": null,
-      "qtyYearPct": null,
+      "qtyTon": 917,
+      "qtyMonthPct": 81.58,
+      "qtyYearPct": 28.97,
       "records": [
         {
           "date": "2026-07-01",
@@ -7869,9 +7869,9 @@
           "previousMonthPct": -6.15,
           "previousYearPrice": 27043.28070175,
           "previousYearPct": 23.88,
-          "qtyTon": null,
-          "qtyMonthPct": null,
-          "qtyYearPct": null
+          "qtyTon": 917,
+          "qtyMonthPct": 81.58,
+          "qtyYearPct": 28.97
         },
         {
           "date": "2026-06-26",
@@ -8243,9 +8243,9 @@
       "previousDayPct": -1.33,
       "previousMonthPct": -5.69,
       "previousYearPct": 27.56,
-      "qtyTon": null,
-      "qtyMonthPct": null,
-      "qtyYearPct": null,
+      "qtyTon": 917,
+      "qtyMonthPct": 81.58,
+      "qtyYearPct": 28.97,
       "records": [
         {
           "date": "2026-07-01",
@@ -8259,9 +8259,9 @@
           "previousMonthPct": -5.69,
           "previousYearPrice": 24170.78947368,
           "previousYearPct": 27.56,
-          "qtyTon": null,
-          "qtyMonthPct": null,
-          "qtyYearPct": null
+          "qtyTon": 917,
+          "qtyMonthPct": 81.58,
+          "qtyYearPct": 28.97
         },
         {
           "date": "2026-06-26",
@@ -8633,9 +8633,9 @@
       "previousDayPct": -5.26,
       "previousMonthPct": -10.08,
       "previousYearPct": 25.09,
-      "qtyTon": null,
-      "qtyMonthPct": null,
-      "qtyYearPct": null,
+      "qtyTon": 917,
+      "qtyMonthPct": 81.58,
+      "qtyYearPct": 28.97,
       "records": [
         {
           "date": "2026-07-01",
@@ -8649,9 +8649,9 @@
           "previousMonthPct": -10.08,
           "previousYearPrice": 21584.21052632,
           "previousYearPct": 25.09,
-          "qtyTon": null,
-          "qtyMonthPct": null,
-          "qtyYearPct": null
+          "qtyTon": 917,
+          "qtyMonthPct": 81.58,
+          "qtyYearPct": 28.97
         },
         {
           "date": "2026-06-26",
@@ -9023,9 +9023,9 @@
       "previousDayPct": -3.56,
       "previousMonthPct": -10.67,
       "previousYearPct": 32.86,
-      "qtyTon": null,
-      "qtyMonthPct": null,
-      "qtyYearPct": null,
+      "qtyTon": 917,
+      "qtyMonthPct": 81.58,
+      "qtyYearPct": 28.97,
       "records": [
         {
           "date": "2026-07-01",
@@ -9039,9 +9039,9 @@
           "previousMonthPct": -10.67,
           "previousYearPrice": 18690.92982456,
           "previousYearPct": 32.86,
-          "qtyTon": null,
-          "qtyMonthPct": null,
-          "qtyYearPct": null
+          "qtyTon": 917,
+          "qtyMonthPct": 81.58,
+          "qtyYearPct": 28.97
         },
         {
           "date": "2026-06-26",
@@ -9413,9 +9413,9 @@
       "previousDayPct": 0,
       "previousMonthPct": 6.35,
       "previousYearPct": 76.12,
-      "qtyTon": null,
-      "qtyMonthPct": null,
-      "qtyYearPct": null,
+      "qtyTon": 917,
+      "qtyMonthPct": 81.58,
+      "qtyYearPct": 28.97,
       "records": [
         {
           "date": "2026-07-01",
@@ -9429,9 +9429,9 @@
           "previousMonthPct": 6.35,
           "previousYearPrice": 8517,
           "previousYearPct": 76.12,
-          "qtyTon": null,
-          "qtyMonthPct": null,
-          "qtyYearPct": null
+          "qtyTon": 917,
+          "qtyMonthPct": 81.58,
+          "qtyYearPct": 28.97
         },
         {
           "date": "2026-06-26",
